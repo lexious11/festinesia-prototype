@@ -7,7 +7,7 @@ An English-language Next.js prototype for discovering Indonesian cultural festiv
 - **Home** — full-width cultural travel hero, search controls, dataset statistics, feature cards, popular events, and destination previews.
 - **Explore** — event search, category chips, province and date-status filters, budget guidance, KEN Top 10 filter, event cards, saved-event hearts.
 - **Event details** — photo gallery preview, overview, 3A (Attraction, Amenities, Accessibility), travel tips/reviews tabs, and source links.
-- **AI Planner** — destination/date/budget/interests/travellers form and an assistant preview.
+- **Trip Planner** — destination/date/budget/interests/travellers form and a travel-guide preview.
 - **Sample itinerary** — three-day visual schedule layout, clearly labeled as illustrative rather than a confirmed plan.
 - **Destinations** — destination preview cards and roadmap placeholders for maps and nearby facilities.
 
@@ -28,7 +28,7 @@ To stop the local server, use `Ctrl + C` in the terminal.
 
 Implemented with local state: app navigation, event search, province/time/category/budget filtering, KEN Top 10 filter, event details, tab selection, saved-event hearts, sample itinerary day tabs, and responsive layouts.
 
-Features not connected yet display a **Coming soon** notice: AI-generated recommendations, AI chat responses, full event galleries, itinerary saving/editing, destination guide details, maps, nearby hotel/restaurant data, traveller profile, and reviews.
+Features not connected yet display a **Coming soon** notice: personalised trip recommendations and itinerary generation, full event galleries, itinerary saving/editing, destination guide details, maps, nearby hotel/restaurant data, traveller profile, and reviews.
 
 ## Dataset & content notes
 

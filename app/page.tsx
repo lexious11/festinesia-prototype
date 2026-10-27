@@ -261,7 +261,7 @@ function HomeLanding({
         <div className="hero-caption"><span /> A journey into local culture</div>
       </section>
       <section className="stats-bar"><div className="stat-cell"><span className="stat-icon stat-green">✺</span><div><strong>{festivals.length}</strong><small>Festival listings</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-orange">◷</span><div><strong>{upcomingCount}</strong><small>Upcoming or ongoing*</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-blue">⌖</span><div><strong>{provinceCount}</strong><small>Provinces represented</small></div></div><p className="stats-note">*Calculated from dates in the<br />working dataset.</p></section>
-      <section className="home-feature-row page-width"><button className="home-feature" onClick={() => onNavigate("explore")}><span className="feature-icon icon-orange">▣</span><strong>Festivals & events</strong><small>Discover cultural celebrations across Indonesia.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("destinations")}><span className="feature-icon icon-blue">⌖</span><strong>Cultural destinations</strong><small>Explore regions known for living traditions.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("planner")}><span className="feature-icon icon-purple">✧</span><strong>AI trip planner</strong><small>Personalised itinerary planning is coming soon.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onComingSoon("Complete 3A destination guides")}><span className="feature-icon icon-green">▤</span><strong>3A information</strong><small>Attractions, amenities, and accessibility.</small><span className="feature-arrow">↗</span></button></section>
+      <section className="home-feature-row page-width"><button className="home-feature" onClick={() => onNavigate("explore")}><span className="feature-icon icon-orange">▣</span><strong>Festivals & events</strong><small>Discover cultural celebrations across Indonesia.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("destinations")}><span className="feature-icon icon-blue">⌖</span><strong>Cultural destinations</strong><small>Explore regions known for living traditions.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("planner")}><span className="feature-icon icon-purple">✧</span><strong>Trip planner</strong><small>Personalised itinerary planning is coming soon.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onComingSoon("Complete 3A destination guides")}><span className="feature-icon icon-green">▤</span><strong>3A information</strong><small>Attractions, amenities, and accessibility.</small><span className="feature-arrow">↗</span></button></section>
       <section className="home-section page-width">
         <div className="section-head"><div><div className="section-kicker">A GOOD PLACE TO START</div><h2>Popular festivals</h2><p>Browse event references from across the archipelago.</p></div><button className="text-arrow" onClick={() => onNavigate("explore")}>View all events <span>→</span></button></div>
         <div className="event-grid-home">{popular.map((event) => <EventCard key={event.no} event={event} onOpen={onOpenEvent} isFavorite={favorites.has(event.no)} onToggleFavorite={onToggleFavorite} compact />)}</div>
@@ -326,13 +326,87 @@ function PlannerPage({ onComingSoon, onShowItinerary }: { onComingSoon: (feature
   const [budget, setBudget] = useState("Rp1,000,000 – 2,000,000");
   const [travelers, setTravelers] = useState(2);
   const [interest, setInterest] = useState<string[]>(["Festivals", "Traditional arts", "Culinary"]);
-  const [prompt, setPrompt] = useState("");
-  const [chatSent, setChatSent] = useState(false);
   const interests = ["Festivals", "Traditional arts", "Culinary", "Nature", "Heritage", "Local communities"];
   const toggleInterest = (item: string) => setInterest((old) => old.includes(item) ? old.filter((v) => v !== item) : [...old, item]);
-  return <main className="content-page planner-page"><div className="page-intro"><div className="section-kicker">A JOURNEY MADE AROUND YOU</div><h1>AI Trip Planner</h1><p>Shape a cultural getaway around your dates, budget, and interests.</p></div><div className="planner-banner"><div><span className="planner-banner-icon">✦</span><div><strong>Your next story starts here</strong><p>Tell us what you love. AI-generated trip planning is a planned feature; this screen is a preview.</p></div></div><span className="coming-badge">AI INTEGRATION COMING SOON</span></div>
-    <div className="planner-layout"><form className="planner-settings" onSubmit={(e) => { e.preventDefault(); onComingSoon("AI-generated travel recommendations"); }}><div className="form-card-head"><span className="form-head-icon">✧</span><div><h2>Plan your journey</h2><p>Set your preferences to shape a future recommendation.</p></div></div><label className="full-field"><span>Where would you like to go?</span><select value={province} onChange={(e) => setProvince(e.target.value)}><option>Yogyakarta</option><option>Bali</option><option>Sumatera Utara</option><option>Jawa Timur</option><option>Aceh</option><option>Anywhere in Indonesia</option>{provinces.filter((p) => !["Yogyakarta", "Bali", "Sumatera Utara", "Jawa Timur", "Aceh", "Anywhere in Indonesia"].includes(p)).map((p) => <option key={p}>{p}</option>)}</select></label><div className="field-two-col"><label className="full-field"><span>Start date</span><input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></label><label className="full-field"><span>End date</span><input type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} /></label></div><label className="full-field"><span>Budget per person</span><select value={budget} onChange={(e) => setBudget(e.target.value)}><option>Under Rp500,000</option><option>Rp500,000 – 1,000,000</option><option>Rp1,000,000 – 2,000,000</option><option>Over Rp2,000,000</option><option>Not sure yet</option></select></label><div className="full-field"><span>What are you interested in?</span><div className="interest-chips">{interests.map((item) => <button type="button" key={item} className={interest.includes(item) ? "interest-selected" : ""} onClick={() => toggleInterest(item)}>{interest.includes(item) && <span>✓ </span>}{item}</button>)}</div></div><div className="travelers-field"><span>Number of travellers</span><div className="stepper"><button type="button" onClick={() => setTravelers((n) => Math.max(1, n - 1))} aria-label="Remove traveller">−</button><strong>{travelers}</strong><button type="button" onClick={() => setTravelers((n) => Math.min(12, n + 1))} aria-label="Add traveller">+</button></div></div><button className="button button-primary button-wide planner-generate" type="submit">Get AI recommendations <span>↗</span></button><p className="form-note">This action will display a Coming soon notice until AI integration is connected.</p></form>
-      <section className="planner-assistant"><div className="assistant-top"><div className="assistant-avatar">✦</div><div><strong>FestiNesia AI</strong><small><span className="status-dot" /> Trip planning assistant · Preview</small></div><span className="assistant-more">•••</span></div><div className="assistant-chat"><div className="assistant-message"><strong>Hello, traveller!</strong><p>I’m here to help you imagine a cultural journey. Full AI chat is coming soon, but you can explore the sample itinerary while we build it.</p></div>{chatSent && <><div className="user-message">{prompt}</div><div className="assistant-message"><strong>Thanks for sharing!</strong><p>Personalised AI recommendations are coming soon. You can still browse the event catalogue and review the sample itinerary.</p></div></> }<div className="suggestion-title">TRY ASKING ABOUT</div><div className="suggestions">{["A 3-day culture trip", "Local food and festivals", "Traditions in Yogyakarta"].map((s) => <button key={s} onClick={() => setPrompt(s)}>{s} ↗</button>)}</div></div><form className="assistant-input" onSubmit={(e) => { e.preventDefault(); if (!prompt.trim()) return; setChatSent(true); onComingSoon("AI chat responses"); }}><input value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Tell us what you love..." aria-label="Message FestiNesia AI" /><button type="submit" aria-label="Send message">↑</button></form><button className="sample-itinerary-link" onClick={onShowItinerary}>Preview a sample 3-day itinerary <span>→</span></button></section></div><Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} /></main>;
+
+  return (
+    <main className="content-page planner-page">
+      <div className="page-intro">
+        <div className="section-kicker">A JOURNEY MADE AROUND YOU</div>
+        <h1>Trip Planner</h1>
+        <p>Plan a cultural getaway around your destination, travel dates, budget, and interests.</p>
+      </div>
+      <div className="planner-banner">
+        <div>
+          <span className="planner-banner-icon">✦</span>
+          <div>
+            <strong>Your next story starts here</strong>
+            <p>Share your travel preferences to prepare for a journey filled with local culture and meaningful experiences.</p>
+          </div>
+        </div>
+        <span className="coming-badge">ITINERARY BUILDER COMING SOON</span>
+      </div>
+      <div className="planner-layout">
+        <form className="planner-settings" onSubmit={(e) => { e.preventDefault(); onComingSoon("Personalised itinerary planning"); }}>
+          <div className="form-card-head">
+            <span className="form-head-icon">✧</span>
+            <div>
+              <h2>Build your trip</h2>
+              <p>Choose your preferences to shape a future travel plan.</p>
+            </div>
+          </div>
+          <label className="full-field">
+            <span>Where would you like to go?</span>
+            <select value={province} onChange={(e) => setProvince(e.target.value)}>
+              <option>Yogyakarta</option><option>Bali</option><option>Sumatera Utara</option><option>Jawa Timur</option><option>Aceh</option><option>Anywhere in Indonesia</option>
+              {provinces.filter((p) => !["Yogyakarta", "Bali", "Sumatera Utara", "Jawa Timur", "Aceh", "Anywhere in Indonesia"].includes(p)).map((p) => <option key={p}>{p}</option>)}
+            </select>
+          </label>
+          <div className="field-two-col">
+            <label className="full-field"><span>Start date</span><input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></label>
+            <label className="full-field"><span>End date</span><input type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} /></label>
+          </div>
+          <label className="full-field">
+            <span>Budget per person</span>
+            <select value={budget} onChange={(e) => setBudget(e.target.value)}>
+              <option>Under Rp500,000</option><option>Rp500,000 – 1,000,000</option><option>Rp1,000,000 – 2,000,000</option><option>Over Rp2,000,000</option><option>Not sure yet</option>
+            </select>
+          </label>
+          <div className="full-field">
+            <span>What are you interested in?</span>
+            <div className="interest-chips">{interests.map((item) => <button type="button" key={item} className={interest.includes(item) ? "interest-selected" : ""} onClick={() => toggleInterest(item)}>{interest.includes(item) && <span>✓ </span>}{item}</button>)}</div>
+          </div>
+          <div className="travelers-field">
+            <span>Number of travellers</span>
+            <div className="stepper"><button type="button" onClick={() => setTravelers((n) => Math.max(1, n - 1))} aria-label="Remove traveller">−</button><strong>{travelers}</strong><button type="button" onClick={() => setTravelers((n) => Math.min(12, n + 1))} aria-label="Add traveller">+</button></div>
+          </div>
+          <button className="button button-primary button-wide planner-generate" type="submit">Create My Itinerary <span>↗</span></button>
+          <p className="form-note">Personalised recommendations and itinerary generation are coming soon.</p>
+        </form>
+        <section className="planner-assistant">
+          <div className="assistant-top">
+            <div className="assistant-avatar">⌖</div>
+            <div><strong>Your Travel Guide</strong><small><span className="status-dot" /> Planning resources · Preview</small></div>
+            <span className="assistant-more">3A</span>
+          </div>
+          <div className="assistant-chat">
+            <div className="assistant-message">
+              <strong>A good trip starts with the right details</strong>
+              <p>Use your destination, travel dates, budget, and interests to shape a cultural journey that suits you.</p>
+            </div>
+            <div className="suggestion-title">THINGS TO CONSIDER</div>
+            <div className="suggestions">
+              <div className="assistant-message"><strong>Attractions</strong><p>Look for local festivals, traditional performances, and heritage experiences.</p></div>
+              <div className="assistant-message"><strong>Amenities</strong><p>Think about accommodation, food options, and facilities near the places you plan to visit.</p></div>
+              <div className="assistant-message"><strong>Accessibility</strong><p>Check transport options, local routes, and travel time before setting your itinerary.</p></div>
+            </div>
+          </div>
+          <button className="sample-itinerary-link" onClick={onShowItinerary}>Preview a sample 3-day itinerary <span>→</span></button>
+        </section>
+      </div>
+      <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
+    </main>
+  );
 }
 
 function ItineraryPage({ onComingSoon, onPlanner }: { onComingSoon: (feature: string) => void; onPlanner: () => void }) {
@@ -342,7 +416,7 @@ function ItineraryPage({ onComingSoon, onPlanner }: { onComingSoon: (feature: st
     { label: "Day 2", date: "11 Nov", activities: [{ time: "08:30", title: "A morning at a local market", kind: "Community", description: "Explore regional produce and daily life.", image: imagePool[3] }, { time: "11:00", title: "Museum or heritage visit", kind: "Attraction", description: "Learn more about regional history and craft.", image: imagePool[6] }, { time: "14:00", title: "Workshop or cultural stop", kind: "Culture", description: "Look for a public workshop or cultural venue.", image: imagePool[1] }, { time: "19:00", title: "Local dinner", kind: "Culinary", description: "Explore regional cuisine and check opening times.", image: imagePool[7] }] },
     { label: "Day 3", date: "12 Nov", activities: [{ time: "09:00", title: "A slower cultural morning", kind: "Culture", description: "Return to a favourite area or visit a local craft space.", image: imagePool[6] }, { time: "12:00", title: "Lunch and souvenirs", kind: "Culinary", description: "Find locally made keepsakes and food.", image: imagePool[3] }, { time: "15:00", title: "Flexible time for discoveries", kind: "Explore", description: "Use this time for an activity found during your stay.", image: imagePool[2] }] },
   ];
-  return <main className="content-page itinerary-page"><button className="back-link" onClick={onPlanner}>← Back to AI planner</button><div className="itinerary-head"><div><div className="section-kicker">SAMPLE TRIP · NOT A CONFIRMED ITINERARY</div><h1>Your cultural journey</h1><p>A sample 3-day itinerary layout inspired by Yogyakarta. Stops and times are illustrative and must be checked before travel.</p></div><div className="itinerary-head-actions"><button className="button button-secondary" onClick={() => onComingSoon("Itinerary editing")}>✎ Edit itinerary</button><button className="button button-primary" onClick={() => onComingSoon("Saving and sharing itineraries")}>Save itinerary</button></div></div><div className="itinerary-summary"><span>⌖ Yogyakarta, Indonesia</span><span>▦ 10–12 November · Sample dates</span><span>♙ 2 travellers</span><span>◈ Budget not estimated</span></div><div className="day-tabs">{days.map((day, i) => <button key={day.label} className={activeDay === i ? "day-tab-active" : ""} onClick={() => setActiveDay(i)}><strong>{day.label}</strong><small>{day.date}</small></button>)}</div><div className="itinerary-list">{days[activeDay].activities.map((activity, i) => <article className="itinerary-activity" key={`${activity.time}-${activity.title}`}><div className="activity-time">{activity.time}<span /></div><div className="activity-line"><i /></div><div className="activity-image"><img src={activity.image} alt="Illustrative activity photo" loading="lazy" /></div><div className="activity-copy"><span className={`activity-kind kind-${i % 3}`}>{activity.kind}</span><h3>{activity.title}</h3><p>{activity.description}</p></div><button className="activity-more" onClick={() => onComingSoon("Detailed itinerary stops")} aria-label="More activity details">···</button></article>)}</div><div className="sample-disclaimer"><span>ⓘ</span><p>This is a sample itinerary layout, not an AI recommendation or a verified travel plan. Check event dates, opening hours, transport, and local guidance before visiting.</p></div></main>;
+  return <main className="content-page itinerary-page"><button className="back-link" onClick={onPlanner}>← Back to trip planner</button><div className="itinerary-head"><div><div className="section-kicker">SAMPLE TRIP · NOT A CONFIRMED ITINERARY</div><h1>Your cultural journey</h1><p>A sample 3-day itinerary layout inspired by Yogyakarta. Stops and times are illustrative and must be checked before travel.</p></div><div className="itinerary-head-actions"><button className="button button-secondary" onClick={() => onComingSoon("Itinerary editing")}>✎ Edit itinerary</button><button className="button button-primary" onClick={() => onComingSoon("Saving and sharing itineraries")}>Save itinerary</button></div></div><div className="itinerary-summary"><span>⌖ Yogyakarta, Indonesia</span><span>▦ 10–12 November · Sample dates</span><span>♙ 2 travellers</span><span>◈ Budget not estimated</span></div><div className="day-tabs">{days.map((day, i) => <button key={day.label} className={activeDay === i ? "day-tab-active" : ""} onClick={() => setActiveDay(i)}><strong>{day.label}</strong><small>{day.date}</small></button>)}</div><div className="itinerary-list">{days[activeDay].activities.map((activity, i) => <article className="itinerary-activity" key={`${activity.time}-${activity.title}`}><div className="activity-time">{activity.time}<span /></div><div className="activity-line"><i /></div><div className="activity-image"><img src={activity.image} alt="Illustrative activity photo" loading="lazy" /></div><div className="activity-copy"><span className={`activity-kind kind-${i % 3}`}>{activity.kind}</span><h3>{activity.title}</h3><p>{activity.description}</p></div><button className="activity-more" onClick={() => onComingSoon("Detailed itinerary stops")} aria-label="More activity details">···</button></article>)}</div><div className="sample-disclaimer"><span>ⓘ</span><p>This is a sample itinerary layout, not a personalised recommendation or a verified travel plan. Check event dates, opening hours, transport, and local guidance before visiting.</p></div></main>;
 }
 
 function DestinationsPage({ onComingSoon }: { onComingSoon: (feature: string) => void }) {
@@ -350,7 +424,7 @@ function DestinationsPage({ onComingSoon }: { onComingSoon: (feature: string) =>
 }
 
 function Footer({ onNavigate }: { onNavigate: (view: View) => void }) {
-  return <footer className="site-footer-v3"><div className="footer-top"><div><div className="footer-brand-name">Festi<span>Nesia</span></div><p>Discover the living culture of Indonesia.</p></div><div className="footer-nav"><button onClick={() => onNavigate("explore")}>Explore events</button><button onClick={() => onNavigate("planner")}>AI Trip Planner</button><button onClick={() => onNavigate("destinations")}>Destinations</button></div></div><div className="footer-bottom-v3"><span>© 2026 FestiNesia · Student prototype</span><span>Event details can change. Confirm with official sources before travelling.</span></div></footer>;
+  return <footer className="site-footer-v3"><div className="footer-top"><div><div className="footer-brand-name">Festi<span>Nesia</span></div><p>Discover the living culture of Indonesia.</p></div><div className="footer-nav"><button onClick={() => onNavigate("explore")}>Explore events</button><button onClick={() => onNavigate("planner")}>Trip Planner</button><button onClick={() => onNavigate("destinations")}>Destinations</button></div></div><div className="footer-bottom-v3"><span>© 2026 FestiNesia · Student prototype</span><span>Event details can change. Confirm with official sources before travelling.</span></div></footer>;
 }
 
 export default function HomePage() {
@@ -387,7 +461,7 @@ export default function HomePage() {
   }, []);
 
   return <>
-    <header className="site-header-v3"><div className="header-inner"><Brand onClick={() => navigate("home")} /><button className={`mobile-menu-button ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Toggle menu">{mobileMenuOpen ? "×" : "☰"}</button><nav className={`main-nav ${mobileMenuOpen ? "mobile-nav-open" : ""}`} aria-label="Main navigation">{([{ key: "home", label: "Home" }, { key: "explore", label: "Explore" }, { key: "planner", label: "AI Planner" }, { key: "explore", label: "Events" }, { key: "destinations", label: "Destinations" }] as { key: View; label: string }[]).map((item, i) => <button key={`${item.label}-${i}`} className={(view === item.key && (item.label !== "Events")) || (item.label === "Events" && view === "event") ? "nav-active-v3" : ""} onClick={() => item.label === "Events" ? navigate("explore") : navigate(item.key)}>{item.label}</button>)}</nav><button className="header-search-icon" onClick={() => navigate("explore")} aria-label="Search festivals">⌕</button><button className="header-avatar" onClick={() => showComingSoon("Traveller profile and saved collections")} aria-label="Traveller profile">✦</button><button className="header-cta-v3" onClick={() => navigate("explore")}>Explore festivals <span>↗</span></button></div></header>
+    <header className="site-header-v3"><div className="header-inner"><Brand onClick={() => navigate("home")} /><button className={`mobile-menu-button ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Toggle menu">{mobileMenuOpen ? "×" : "☰"}</button><nav className={`main-nav ${mobileMenuOpen ? "mobile-nav-open" : ""}`} aria-label="Main navigation">{([{ key: "home", label: "Home" }, { key: "explore", label: "Explore" }, { key: "planner", label: "Trip Planner" }, { key: "explore", label: "Events" }, { key: "destinations", label: "Destinations" }] as { key: View; label: string }[]).map((item, i) => <button key={`${item.label}-${i}`} className={(view === item.key && (item.label !== "Events")) || (item.label === "Events" && view === "event") ? "nav-active-v3" : ""} onClick={() => item.label === "Events" ? navigate("explore") : navigate(item.key)}>{item.label}</button>)}</nav><button className="header-search-icon" onClick={() => navigate("explore")} aria-label="Search festivals">⌕</button><button className="header-avatar" onClick={() => showComingSoon("Traveller profile and saved collections")} aria-label="Traveller profile">✦</button><button className="header-cta-v3" onClick={() => navigate("explore")}>Explore festivals <span>↗</span></button></div></header>
     {view === "home" && <HomeLanding onNavigate={navigate} onExploreSearch={exploreSearch} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} onComingSoon={showComingSoon} />}
     {view === "explore" && <ExplorePage key={queryForExplore} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} initialQuery={queryForExplore} />}
     {view === "event" && selectedEvent && <DetailPage event={selectedEvent} onBack={() => navigate("explore")} onComingSoon={showComingSoon} favorite={savedIds.has(selectedEvent.no)} onFavorite={() => toggleFavorite(selectedEvent)} />}
