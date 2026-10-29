@@ -72,8 +72,11 @@ function getEventPhoto(event: FestivalRecord, offset = 0) {
 function Brand({ onClick }: { onClick: () => void }) {
   return (
     <button className="brand" aria-label="FestiNesia home" onClick={onClick}>
-      <span className="brand-mark"><span>F</span></span>
-      <span className="brand-copy"><span className="brand-word">Festi<span>Nesia</span></span><small>Culture, closer than ever</small></span>
+      <img
+        className="brand-logo"
+        src="/images/FestiNesia_Logo_Horizontal.png"
+        alt="FestiNesia — Culture, closer than ever"
+      />
     </button>
   );
 }
@@ -424,7 +427,7 @@ function DestinationsPage({ onComingSoon }: { onComingSoon: (feature: string) =>
 }
 
 function Footer({ onNavigate }: { onNavigate: (view: View) => void }) {
-  return <footer className="site-footer-v3"><div className="footer-top"><div><div className="footer-brand-name">Festi<span>Nesia</span></div><p>Discover the living culture of Indonesia.</p></div><div className="footer-nav"><button onClick={() => onNavigate("explore")}>Explore events</button><button onClick={() => onNavigate("planner")}>Trip Planner</button><button onClick={() => onNavigate("destinations")}>Destinations</button></div></div><div className="footer-bottom-v3"><span>© 2026 FestiNesia · Student prototype</span><span>Event details can change. Confirm with official sources before travelling.</span></div></footer>;
+  return <footer className="site-footer-v3"><div className="footer-top"><div className="footer-brand-block"><img className="footer-logo" src="/images/FestiNesia_Logo_Horizontal.png" alt="FestiNesia — Culture, closer than ever" /><p>Discover the living culture of Indonesia.</p></div><div className="footer-nav"><button onClick={() => onNavigate("explore")}>Explore festivals</button><button onClick={() => onNavigate("planner")}>Trip Planner</button><button onClick={() => onNavigate("itinerary")}>Itinerary</button><button onClick={() => onNavigate("destinations")}>Destinations</button></div></div><div className="footer-bottom-v3"><span>© 2026 FestiNesia · Student prototype</span><span>Event details can change. Confirm with official sources before travelling.</span></div></footer>;
 }
 
 export default function HomePage() {
@@ -461,7 +464,7 @@ export default function HomePage() {
   }, []);
 
   return <>
-    <header className="site-header-v3"><div className="header-inner"><Brand onClick={() => navigate("home")} /><button className={`mobile-menu-button ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Toggle menu">{mobileMenuOpen ? "×" : "☰"}</button><nav className={`main-nav ${mobileMenuOpen ? "mobile-nav-open" : ""}`} aria-label="Main navigation">{([{ key: "home", label: "Home" }, { key: "explore", label: "Explore" }, { key: "planner", label: "Trip Planner" }, { key: "explore", label: "Events" }, { key: "destinations", label: "Destinations" }] as { key: View; label: string }[]).map((item, i) => <button key={`${item.label}-${i}`} className={(view === item.key && (item.label !== "Events")) || (item.label === "Events" && view === "event") ? "nav-active-v3" : ""} onClick={() => item.label === "Events" ? navigate("explore") : navigate(item.key)}>{item.label}</button>)}</nav><button className="header-search-icon" onClick={() => navigate("explore")} aria-label="Search festivals">⌕</button><button className="header-avatar" onClick={() => showComingSoon("Traveller profile and saved collections")} aria-label="Traveller profile">✦</button><button className="header-cta-v3" onClick={() => navigate("explore")}>Explore festivals <span>↗</span></button></div></header>
+    <header className="site-header-v3"><div className="header-inner"><Brand onClick={() => navigate("home")} /><button className={`mobile-menu-button ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Toggle menu">{mobileMenuOpen ? "×" : "☰"}</button><nav className={`main-nav ${mobileMenuOpen ? "mobile-nav-open" : ""}`} aria-label="Main navigation">{([{ key: "home", label: "Home" }, { key: "explore", label: "Explore" }, { key: "planner", label: "Trip Planner" }, { key: "itinerary", label: "Itinerary" }, { key: "destinations", label: "Destinations" }] as { key: View; label: string }[]).map((item) => <button key={item.label} className={(view === item.key || (item.key === "explore" && view === "event")) ? "nav-active-v3" : ""} onClick={() => navigate(item.key)}>{item.label}</button>)}</nav><button className="header-search-icon" onClick={() => navigate("explore")} aria-label="Search festivals">⌕</button><button className="header-avatar" onClick={() => showComingSoon("Traveller profile and saved collections")} aria-label="Traveller profile">✦</button><button className="header-cta-v3" onClick={() => navigate("explore")}>Explore festivals <span>↗</span></button></div></header>
     {view === "home" && <HomeLanding onNavigate={navigate} onExploreSearch={exploreSearch} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} onComingSoon={showComingSoon} />}
     {view === "explore" && <ExplorePage key={queryForExplore} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} initialQuery={queryForExplore} />}
     {view === "event" && selectedEvent && <DetailPage event={selectedEvent} onBack={() => navigate("explore")} onComingSoon={showComingSoon} favorite={savedIds.has(selectedEvent.no)} onFavorite={() => toggleFavorite(selectedEvent)} />}
