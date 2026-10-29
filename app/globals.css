@@ -135,3 +135,111 @@ body{font-size:15px}
   .activity-copy p{font-size:10px}
   .footer-nav button{font-size:11px}
 }
+
+/* Desktop typography adjustment only (min-width: 1101px).
+   Mobile and tablet font rules remain unchanged. */
+@media (min-width: 1101px) {
+  body { font-size: 16px; }
+
+  /* Navigation and global controls */
+  .main-nav button { font-size: 14px; }
+  .header-cta-v3 { font-size: 13px; }
+  .button { font-size: 14px; }
+  .eyebrow, .section-kicker { font-size: 10px; }
+  .text-arrow { font-size: 13px; }
+  .muted-badge { font-size: 11px; }
+
+  /* Homepage */
+  .home-hero-content > p { font-size: 16px; }
+  .hero-search-field input,
+  .hero-search-field select { font-size: 14px; }
+  .hero-search-submit { font-size: 14px; }
+  .hero-trust-line { font-size: 12px; }
+  .hero-caption { font-size: 11px; }
+  .stat-cell small { font-size: 12px; }
+  .stats-note { font-size: 11px; }
+  .home-feature strong { font-size: 14px; }
+  .home-feature small { font-size: 12px; }
+  .section-head h2 { font-size: 34px; }
+  .section-head p { font-size: 15px; }
+
+  /* Festival cards and Explore */
+  .event-card-date { font-size: 12px; }
+  .event-card-title { font-size: 16px; min-height: 42px; }
+  .event-card-location { font-size: 13px; min-height: 34px; }
+  .event-price { font-size: 12px; }
+  .status-pill { font-size: 11px; }
+  .image-disclaimer { font-size: 10px; }
+  .page-intro h1 { font-size: 40px; }
+  .page-intro p { font-size: 15px; }
+  .explore-search-row input { font-size: 15px; }
+  .explore-search-row kbd { font-size: 11px; }
+  .search-results-total { font-size: 12px; }
+  .category-chip { font-size: 12px; }
+  .filters-heading strong { font-size: 16px; }
+  .filters-heading button { font-size: 12px; }
+  .filter-group > span { font-size: 14px; }
+  .filter-group select,
+  .full-field select,
+  .full-field input { font-size: 14px; }
+  .radio-line { font-size: 12px; }
+  .top-filter-sidebar strong { font-size: 12px; }
+  .top-filter-sidebar small { font-size: 10px; }
+  .filter-help p { font-size: 11px; }
+  .results-heading h2 { font-size: 20px; }
+  .results-heading p,
+  .sort-select,
+  .sort-select select { font-size: 12px; }
+  .dataset-disclaimer p,
+  .sample-disclaimer p { font-size: 12px; }
+
+  /* Festival details */
+  .back-link { font-size: 13px; }
+  .detail-title-copy h1 { font-size: 42px; }
+  .detail-location { font-size: 14px; }
+  .detail-title-meta { font-size: 12px; }
+  .detail-tabs button { font-size: 13px; }
+  .source-copy p { font-size: 13px; }
+  .source-copy small,
+  .source-links a,
+  .source-links span { font-size: 12px; }
+
+  /* Trip Planner and guide */
+  .planner-banner strong { font-size: 15px; }
+  .planner-banner p { font-size: 13px; }
+  .coming-badge { font-size: 10px; }
+  .form-card-head h2 { font-size: 18px; }
+  .form-card-head p { font-size: 12px; }
+  .full-field > span,
+  .travelers-field > span { font-size: 13px; }
+  .interest-chips button,
+  .suggestions button { font-size: 12px; }
+  .assistant-message strong { font-size: 13px; }
+  .assistant-message p { font-size: 12px; }
+  .suggestion-title { font-size: 10px; }
+  .sample-itinerary-link { font-size: 13px; }
+
+  /* Itinerary page: the area highlighted in the screenshots */
+  .itinerary-head h1 { font-size: 42px; }
+  .itinerary-head p { font-size: 15px; }
+  .itinerary-head-actions .button { font-size: 14px; }
+  .itinerary-summary { font-size: 13px; }
+  .day-tabs button strong { font-size: 14px; }
+  .day-tabs button small { font-size: 12px; }
+  .activity-time { font-size: 13px; }
+  .activity-kind { font-size: 11px; }
+  .activity-copy h3 { font-size: 16px; }
+  .activity-copy p { font-size: 14px; }
+  .activity-more { font-size: 20px; }
+
+  /* Destinations and footer */
+  .destination-feature-copy h2 { font-size: 46px; }
+  .destination-feature-copy p { font-size: 15px; }
+  .destination-card-body h3 { font-size: 18px; }
+  .destination-card-body > small { font-size: 12px; }
+  .destination-card-body p { font-size: 13px; }
+  .destination-bottom span,
+  .destination-bottom button { font-size: 11px; }
+  .footer-nav button { font-size: 13px; }
+  .footer-bottom-v3 { font-size: 11px; }
+}
