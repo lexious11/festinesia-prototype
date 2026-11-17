@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   eventStatus,
   festivals,
@@ -9,11 +9,24 @@ import {
   type FestivalRecord,
 } from "@/lib/festivals";
 import { getEventImage } from "@/lib/event-images";
+import {
+  createSamplePlan,
+  createTripPlan,
+  formatTripDate,
+  formatTripDateRange,
+  listTripDates,
+  parseLocalISODate,
+  toLocalISODate,
+  type ItineraryPlan,
+  type TripPreferences,
+} from "@/lib/trip-planner";
 
 type View = "home" | "explore" | "event" | "planner" | "itinerary" | "destinations";
 type Category = "All" | "Festivals" | "Performances" | "Museums" | "Culinary" | "Traditions" | "Village tourism";
 type DetailTab = "Overview" | "Attraction" | "Amenities" | "Accessibility" | "Travel tips" | "Reviews";
 type Timing = "all" | "upcoming" | "ongoing" | "past";
+
+const ITINERARY_STORAGE_KEY = "festinesia:itinerary:v1";
 
 type Destination = { name: string; province: string; description: string; image: string; tag: string };
 
@@ -322,15 +335,60 @@ function ExplorePage({
   </main>;
 }
 
-function PlannerPage({ onComingSoon, onShowItinerary }: { onComingSoon: (feature: string) => void; onShowItinerary: () => void }) {
-  const [province, setProvince] = useState("Yogyakarta");
-  const [startDate, setStartDate] = useState("2026-11-10");
-  const [endDate, setEndDate] = useState("2026-11-12");
-  const [budget, setBudget] = useState("Rp1,000,000 – 2,000,000");
-  const [travelers, setTravelers] = useState(2);
-  const [interest, setInterest] = useState<string[]>(["Festivals", "Traditional arts", "Culinary"]);
+function PlannerPage({
+  onCreatePlan,
+  onShowItinerary,
+  initialPreferences,
+}: {
+  onCreatePlan: (preferences: TripPreferences) => void;
+  onShowItinerary: () => void;
+  initialPreferences?: TripPreferences;
+}) {
+  const [province, setProvince] = useState(initialPreferences?.destination ?? "all");
+  const [startDate, setStartDate] = useState(initialPreferences?.startDate ?? "");
+  const [endDate, setEndDate] = useState(initialPreferences?.endDate ?? "");
+  const [budget, setBudget] = useState(initialPreferences?.budget ?? "Not sure yet");
+  const [travelers, setTravelers] = useState(initialPreferences?.travelers ?? 2);
+  const [interest, setInterest] = useState<string[]>(initialPreferences?.interests ?? ["Festivals", "Traditional arts", "Culinary"]);
+  const [formError, setFormError] = useState("");
+  const [today] = useState(() => toLocalISODate(new Date()));
   const interests = ["Festivals", "Traditional arts", "Culinary", "Nature", "Heritage", "Local communities"];
-  const toggleInterest = (item: string) => setInterest((old) => old.includes(item) ? old.filter((v) => v !== item) : [...old, item]);
+  const toggleInterest = (item: string) => {
+    setInterest((old) => old.includes(item) ? old.filter((v) => v !== item) : [...old, item]);
+    setFormError("");
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const start = parseLocalISODate(startDate);
+    const end = parseLocalISODate(endDate);
+    const todayDate = parseLocalISODate(today);
+
+    if (!startDate || !endDate || !start || !end) {
+      setFormError("Please select both your start and end dates.");
+      return;
+    }
+    if (todayDate && start < todayDate) {
+      setFormError("Your travel start date cannot be in the past.");
+      return;
+    }
+    if (end < start) {
+      setFormError("Your end date must be on or after your start date.");
+      return;
+    }
+    const tripDays = listTripDates(startDate, endDate);
+    if (tripDays.length > 14) {
+      setFormError("For this prototype, please choose a trip of up to 14 days.");
+      return;
+    }
+    if (!interest.length) {
+      setFormError("Please choose at least one interest so we can rank relevant events.");
+      return;
+    }
+
+    setFormError("");
+    onCreatePlan({ destination: province, startDate, endDate, budget, travelers, interests: interest });
+  };
 
   return (
     <main className="content-page planner-page">
@@ -344,30 +402,30 @@ function PlannerPage({ onComingSoon, onShowItinerary }: { onComingSoon: (feature
           <span className="planner-banner-icon">✦</span>
           <div>
             <strong>Your next story starts here</strong>
-            <p>Share your travel preferences to prepare for a journey filled with local culture and meaningful experiences.</p>
+            <p>Choose your preferences and discover festival listings that overlap with your travel dates.</p>
           </div>
         </div>
-        <span className="coming-badge">ITINERARY BUILDER COMING SOON</span>
+        <span className="coming-badge">BASED ON THE CURRENT EVENT DATASET</span>
       </div>
       <div className="planner-layout">
-        <form className="planner-settings" onSubmit={(e) => { e.preventDefault(); onComingSoon("Personalised itinerary planning"); }}>
+        <form className="planner-settings" onSubmit={handleSubmit} noValidate>
           <div className="form-card-head">
             <span className="form-head-icon">✧</span>
             <div>
               <h2>Build your trip</h2>
-              <p>Choose your preferences to shape a future travel plan.</p>
+              <p>Choose your preferences to find cultural events for your dates.</p>
             </div>
           </div>
           <label className="full-field">
             <span>Where would you like to go?</span>
             <select value={province} onChange={(e) => setProvince(e.target.value)}>
-              <option>Yogyakarta</option><option>Bali</option><option>Sumatera Utara</option><option>Jawa Timur</option><option>Aceh</option><option>Anywhere in Indonesia</option>
-              {provinces.filter((p) => !["Yogyakarta", "Bali", "Sumatera Utara", "Jawa Timur", "Aceh", "Anywhere in Indonesia"].includes(p)).map((p) => <option key={p}>{p}</option>)}
+              <option value="all">Anywhere in Indonesia</option>
+              {provinces.map((p) => <option key={p} value={p}>{p === "DI Yogyakarta" ? "Yogyakarta" : p}</option>)}
             </select>
           </label>
           <div className="field-two-col">
-            <label className="full-field"><span>Start date</span><input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></label>
-            <label className="full-field"><span>End date</span><input type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} /></label>
+            <label className="full-field"><span>Start date</span><input type="date" min={today} value={startDate} onChange={(e) => { setStartDate(e.target.value); if (endDate && e.target.value && endDate < e.target.value) setEndDate(e.target.value); setFormError(""); }} required /></label>
+            <label className="full-field"><span>End date</span><input type="date" min={startDate || today} value={endDate} onChange={(e) => { setEndDate(e.target.value); setFormError(""); }} required /></label>
           </div>
           <label className="full-field">
             <span>Budget per person</span>
@@ -377,34 +435,35 @@ function PlannerPage({ onComingSoon, onShowItinerary }: { onComingSoon: (feature
           </label>
           <div className="full-field">
             <span>What are you interested in?</span>
-            <div className="interest-chips">{interests.map((item) => <button type="button" key={item} className={interest.includes(item) ? "interest-selected" : ""} onClick={() => toggleInterest(item)}>{interest.includes(item) && <span>✓ </span>}{item}</button>)}</div>
+            <div className="interest-chips">{interests.map((item) => <button type="button" key={item} className={interest.includes(item) ? "interest-selected" : ""} onClick={() => toggleInterest(item)} aria-pressed={interest.includes(item)}>{interest.includes(item) && <span>✓ </span>}{item}</button>)}</div>
           </div>
           <div className="travelers-field">
             <span>Number of travellers</span>
             <div className="stepper"><button type="button" onClick={() => setTravelers((n) => Math.max(1, n - 1))} aria-label="Remove traveller">−</button><strong>{travelers}</strong><button type="button" onClick={() => setTravelers((n) => Math.min(12, n + 1))} aria-label="Add traveller">+</button></div>
           </div>
+          {formError && <p className="planner-form-error" role="alert">{formError}</p>}
           <button className="button button-primary button-wide planner-generate" type="submit">Create My Itinerary <span>↗</span></button>
-          <p className="form-note">Personalised recommendations and itinerary generation are coming soon.</p>
+          <p className="form-note">We match published event dates and locations. Budget is a preference only; transport, accommodation, and meal costs are not calculated.</p>
         </form>
         <section className="planner-assistant">
           <div className="assistant-top">
             <div className="assistant-avatar">⌖</div>
-            <div><strong>Your Travel Guide</strong><small><span className="status-dot" /> Planning resources · Preview</small></div>
+            <div><strong>Your Travel Guide</strong><small><span className="status-dot" /> Planning resources · Dataset preview</small></div>
             <span className="assistant-more">3A</span>
           </div>
           <div className="assistant-chat">
             <div className="assistant-message">
-              <strong>A good trip starts with the right details</strong>
-              <p>Use your destination, travel dates, budget, and interests to shape a cultural journey that suits you.</p>
+              <strong>Your preferences shape the journey</strong>
+              <p>We compare your destination and travel dates with festival listings in the current working dataset. Your interests help rank the most relevant matches.</p>
             </div>
             <div className="suggestion-title">THINGS TO CONSIDER</div>
             <div className="suggestions">
-              <div className="assistant-message"><strong>Attractions</strong><p>Look for local festivals, traditional performances, and heritage experiences.</p></div>
-              <div className="assistant-message"><strong>Amenities</strong><p>Think about accommodation, food options, and facilities near the places you plan to visit.</p></div>
-              <div className="assistant-message"><strong>Accessibility</strong><p>Check transport options, local routes, and travel time before setting your itinerary.</p></div>
+              <div className="assistant-message"><strong>Attractions</strong><p>Explore festivals, traditional performances, and heritage experiences listed for your destination.</p></div>
+              <div className="assistant-message"><strong>Amenities</strong><p>Check accommodation, food options, and facilities near the places you plan to visit.</p></div>
+              <div className="assistant-message"><strong>Accessibility</strong><p>Confirm transport options, local routes, and travel time before setting your itinerary.</p></div>
             </div>
           </div>
-          <button className="sample-itinerary-link" onClick={onShowItinerary}>Preview a sample 3-day itinerary <span>→</span></button>
+          <button className="sample-itinerary-link" onClick={onShowItinerary}>Preview an illustrative 3-day itinerary <span>→</span></button>
         </section>
       </div>
       <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
@@ -412,14 +471,162 @@ function PlannerPage({ onComingSoon, onShowItinerary }: { onComingSoon: (feature
   );
 }
 
-function ItineraryPage({ onComingSoon, onPlanner }: { onComingSoon: (feature: string) => void; onPlanner: () => void }) {
+const sampleSchedule = [
+  [
+    { time: "09:00", title: "Explore a heritage landmark", kind: "Attraction", description: "An illustrative idea: begin with a cultural site and learn about the region's history.", image: imagePool[6] },
+    { time: "12:00", title: "Taste local specialities", kind: "Culinary", description: "An illustrative idea: take a lunch break and explore local flavours.", image: imagePool[3] },
+    { time: "15:00", title: "Visit a traditional arts area", kind: "Culture", description: "An illustrative idea: discover craft, performance, and community traditions.", image: imagePool[1] },
+    { time: "18:30", title: "Evening cultural experience", kind: "Experience", description: "An illustrative idea: consider an evening activity after checking local schedules.", image: imagePool[0] },
+  ],
+  [
+    { time: "08:30", title: "A morning at a local market", kind: "Community", description: "An illustrative idea: explore regional produce and daily life.", image: imagePool[3] },
+    { time: "11:00", title: "Museum or heritage visit", kind: "Attraction", description: "An illustrative idea: learn more about regional history and craft.", image: imagePool[6] },
+    { time: "14:00", title: "Workshop or cultural stop", kind: "Culture", description: "An illustrative idea: look for a public workshop or cultural venue.", image: imagePool[1] },
+    { time: "19:00", title: "Local dinner", kind: "Culinary", description: "An illustrative idea: explore regional cuisine and check opening times.", image: imagePool[7] },
+  ],
+  [
+    { time: "09:00", title: "A slower cultural morning", kind: "Culture", description: "An illustrative idea: return to a favourite area or visit a local craft space.", image: imagePool[6] },
+    { time: "12:00", title: "Lunch and souvenirs", kind: "Culinary", description: "An illustrative idea: find locally made keepsakes and food.", image: imagePool[3] },
+    { time: "15:00", title: "Flexible time for discoveries", kind: "Explore", description: "An illustrative idea: leave time for an activity found during your stay.", image: imagePool[2] },
+  ],
+];
+
+function itineraryDestinationLabel(destination: string) {
+  if (destination === "all") return "Across Indonesia";
+  return destination === "DI Yogyakarta" ? "Yogyakarta, Indonesia" : `${destination}, Indonesia`;
+}
+
+function ItineraryPage({
+  plan,
+  isSaved,
+  onSave,
+  onRemoveEvent,
+  onPlanner,
+  onShowSample,
+  onExplore,
+  onOpenEvent,
+}: {
+  plan: ItineraryPlan | null;
+  isSaved: boolean;
+  onSave: () => boolean;
+  onRemoveEvent: (eventNo: number) => void;
+  onPlanner: () => void;
+  onShowSample: () => void;
+  onExplore: () => void;
+  onOpenEvent: (event: FestivalRecord) => void;
+}) {
   const [activeDay, setActiveDay] = useState(0);
-  const days = [
-    { label: "Day 1", date: "10 Nov", activities: [{ time: "09:00", title: "Explore a heritage landmark", kind: "Attraction", description: "Begin with a cultural site and learn about the region's history.", image: imagePool[6] }, { time: "12:00", title: "Taste local specialities", kind: "Culinary", description: "Take a lunch break and explore local flavours.", image: imagePool[3] }, { time: "15:00", title: "Visit a traditional arts area", kind: "Culture", description: "Discover craft, performance, and community traditions.", image: imagePool[1] }, { time: "18:30", title: "Evening cultural experience", kind: "Experience", description: "End the day with an activity after checking local schedules.", image: imagePool[0] }] },
-    { label: "Day 2", date: "11 Nov", activities: [{ time: "08:30", title: "A morning at a local market", kind: "Community", description: "Explore regional produce and daily life.", image: imagePool[3] }, { time: "11:00", title: "Museum or heritage visit", kind: "Attraction", description: "Learn more about regional history and craft.", image: imagePool[6] }, { time: "14:00", title: "Workshop or cultural stop", kind: "Culture", description: "Look for a public workshop or cultural venue.", image: imagePool[1] }, { time: "19:00", title: "Local dinner", kind: "Culinary", description: "Explore regional cuisine and check opening times.", image: imagePool[7] }] },
-    { label: "Day 3", date: "12 Nov", activities: [{ time: "09:00", title: "A slower cultural morning", kind: "Culture", description: "Return to a favourite area or visit a local craft space.", image: imagePool[6] }, { time: "12:00", title: "Lunch and souvenirs", kind: "Culinary", description: "Find locally made keepsakes and food.", image: imagePool[3] }, { time: "15:00", title: "Flexible time for discoveries", kind: "Explore", description: "Use this time for an activity found during your stay.", image: imagePool[2] }] },
-  ];
-  return <main className="content-page itinerary-page"><button className="back-link" onClick={onPlanner}>← Back to trip planner</button><div className="itinerary-head"><div><div className="section-kicker">SAMPLE TRIP · NOT A CONFIRMED ITINERARY</div><h1>Your cultural journey</h1><p>A sample 3-day itinerary layout inspired by Yogyakarta. Stops and times are illustrative and must be checked before travel.</p></div><div className="itinerary-head-actions"><button className="button button-secondary" onClick={() => onComingSoon("Itinerary editing")}>✎ Edit itinerary</button><button className="button button-primary" onClick={() => onComingSoon("Saving and sharing itineraries")}>Save itinerary</button></div></div><div className="itinerary-summary"><span>⌖ Yogyakarta, Indonesia</span><span>▦ 10–12 November · Sample dates</span><span>♙ 2 travellers</span><span>◈ Budget not estimated</span></div><div className="day-tabs">{days.map((day, i) => <button key={day.label} className={activeDay === i ? "day-tab-active" : ""} onClick={() => setActiveDay(i)}><strong>{day.label}</strong><small>{day.date}</small></button>)}</div><div className="itinerary-list">{days[activeDay].activities.map((activity, i) => <article className="itinerary-activity" key={`${activity.time}-${activity.title}`}><div className="activity-time">{activity.time}<span /></div><div className="activity-line"><i /></div><div className="activity-image"><img src={activity.image} alt="Illustrative activity photo" loading="lazy" /></div><div className="activity-copy"><span className={`activity-kind kind-${i % 3}`}>{activity.kind}</span><h3>{activity.title}</h3><p>{activity.description}</p></div><button className="activity-more" onClick={() => onComingSoon("Detailed itinerary stops")} aria-label="More activity details">···</button></article>)}</div><div className="sample-disclaimer"><span>ⓘ</span><p>This is a sample itinerary layout, not a personalised recommendation or a verified travel plan. Check event dates, opening hours, transport, and local guidance before visiting.</p></div></main>;
+  const [editMode, setEditMode] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const dayDates = plan?.dayDates ?? [];
+  const safeActiveDay = Math.min(activeDay, Math.max(dayDates.length - 1, 0));
+  const activeDate = dayDates[safeActiveDay];
+  const dayEvents = plan && activeDate
+    ? plan.matches.filter((event) => plan.visitDates[String(event.no)] === activeDate)
+    : [];
+
+  useEffect(() => {
+    setActiveDay(0);
+    setEditMode(false);
+    setSaveMessage("");
+  }, [plan?.createdAt]);
+
+  const handleSave = () => {
+    const saved = onSave();
+    setSaveMessage(saved ? "Itinerary saved in this browser on this device." : "We could not save the itinerary in this browser. Check your browser storage settings.");
+  };
+
+  if (!plan) {
+    return (
+      <main className="content-page itinerary-page">
+        <div className="itinerary-empty-state">
+          <span className="itinerary-empty-icon">✦</span>
+          <div className="section-kicker">YOUR NEXT JOURNEY</div>
+          <h1>Your cultural itinerary</h1>
+          <p>You have not created a trip plan yet. Choose a destination and travel dates to find festival listings that may fit your journey.</p>
+          <div className="itinerary-empty-actions">
+            <button className="button button-primary" onClick={onPlanner}>Start planning <span>↗</span></button>
+            <button className="button button-secondary" onClick={onShowSample}>Preview a sample itinerary</button>
+          </div>
+        </div>
+        <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
+      </main>
+    );
+  }
+
+  const preferences = plan.preferences;
+  const isSample = plan.mode === "sample";
+  const selectedDayEvents = dayEvents;
+  const selectedSampleActivities = isSample ? (sampleSchedule[safeActiveDay] ?? []) : [];
+
+  return (
+    <main className="content-page itinerary-page">
+      <button className="back-link" onClick={onPlanner}>← Back to trip planner</button>
+      <div className="itinerary-head">
+        <div>
+          <div className="section-kicker">{isSample ? "SAMPLE TRIP · ILLUSTRATIVE IDEAS" : "YOUR TRIP PLAN · WORKING DATASET"}</div>
+          <h1>Your cultural journey</h1>
+          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and times are illustrative and must be checked before travel." : `${plan.matches.length} festival ${plan.matches.length === 1 ? "listing" : "listings"} match your destination and travel dates. Event details should be confirmed with official sources.`}</p>
+        </div>
+        <div className="itinerary-head-actions">
+          {!isSample && <button className={`button button-secondary ${editMode ? "button-edit-active" : ""}`} onClick={() => { setEditMode((value) => !value); setSaveMessage(""); }}>{editMode ? "Done editing" : "✎ Edit itinerary"}</button>}
+          <button className="button button-primary" onClick={handleSave}>{isSaved ? "Saved ✓" : "Save itinerary"}</button>
+        </div>
+      </div>
+      <div className="itinerary-summary">
+        <span>⌖ {itineraryDestinationLabel(preferences.destination)}</span>
+        <span>▦ {formatTripDateRange(preferences.startDate, preferences.endDate)}</span>
+        <span>♙ {preferences.travelers} {preferences.travelers === 1 ? "traveller" : "travellers"}</span>
+        <span>◈ {preferences.budget === "Not sure yet" || preferences.budget === "Not estimated" ? "Budget not estimated" : `${preferences.budget} per person`}</span>
+      </div>
+      {saveMessage && <p className={`itinerary-save-message ${saveMessage.startsWith("Itinerary saved") ? "is-success" : "is-error"}`} role="status">{saveMessage}</p>}
+      {editMode && <div className="itinerary-edit-note">Edit mode: use the × button on a festival card to remove it from this itinerary. The original event remains in Explore.</div>}
+      <div className="day-tabs">
+        {dayDates.map((date, index) => {
+          const count = plan.matches.filter((event) => plan.visitDates[String(event.no)] === date).length;
+          return <button key={date} className={safeActiveDay === index ? "day-tab-active" : ""} onClick={() => setActiveDay(index)}><strong>Day {index + 1}</strong><small>{formatTripDate(date)}</small>{!isSample && <small className="day-event-count">{count} {count === 1 ? "event" : "events"}</small>}</button>;
+        })}
+      </div>
+      <div className="itinerary-list">
+        {isSample ? selectedSampleActivities.map((activity, index) => (
+          <article className="itinerary-activity" key={`${safeActiveDay}-${activity.time}-${activity.title}`}>
+            <div className="activity-time">{activity.time}<span /></div>
+            <div className="activity-line"><i /></div>
+            <div className="activity-image"><img src={activity.image} alt="Illustrative cultural travel idea" loading="lazy" /></div>
+            <div className="activity-copy"><span className={`activity-kind kind-${index % 3}`}>{activity.kind}</span><h3>{activity.title}</h3><p>{activity.description}</p><span className="itinerary-illustrative-label">Illustrative idea · Not a confirmed venue</span></div>
+            <span className="activity-more" aria-hidden="true">···</span>
+          </article>
+        )) : selectedDayEvents.length ? selectedDayEvents.map((event, index) => {
+          const photo = getEventPhoto(event, index);
+          const description = event.deskripsi_festinesia?.trim() || "This event appears in the current working dataset. Check the official source for programme details and visitor information.";
+          return (
+            <article className="itinerary-activity itinerary-event-activity" key={event.no}>
+              <div className="activity-time">Festival<span /></div>
+              <div className="activity-line"><i /></div>
+              <div className="activity-image"><img src={photo.url} alt={photo.illustrative ? `Illustrative photo for ${event.nama_event}` : event.nama_event} loading="lazy" /><span className="itinerary-image-label">{photo.illustrative ? "Illustrative" : "Event photo"}</span></div>
+              <div className="activity-copy">
+                <span className={`activity-kind kind-${index % 3}`}>Festival listing</span>
+                <h3>{event.nama_event}</h3>
+                <p>{description}</p>
+                <div className="itinerary-event-meta"><span>▦ {formatDateRange(event)}</span><span>⌖ {locationLabel(event)}</span><span>◈ {priceLabel(event)}</span></div>
+                <div className="itinerary-event-actions"><button onClick={() => onOpenEvent(event)}>View event details ↗</button>{event.url_sumber && <a href={event.url_sumber} target="_blank" rel="noreferrer">Official source ↗</a>}</div>
+              </div>
+              {editMode ? <button className="activity-more itinerary-remove-button" onClick={() => onRemoveEvent(event.no)} aria-label={`Remove ${event.nama_event} from itinerary`} title="Remove from itinerary">×</button> : <button className="activity-more" onClick={() => onOpenEvent(event)} aria-label={`View ${event.nama_event}`} title="View event details">↗</button>}
+            </article>
+          );
+        }) : (
+          <div className="itinerary-day-empty">
+            <span>✦</span>
+            <h3>{plan.matches.length ? "No festival scheduled for this day" : "No matching festival listings yet"}</h3>
+            <p>{plan.matches.length ? "There are no festival listings assigned to this date in the current dataset. You can explore other cultural events or leave this day flexible." : "The current dataset has no event with a confirmed date range matching this destination and trip period. Try different dates or another destination."}</p>
+            <button className="button button-secondary" onClick={onExplore}>Explore festivals</button>
+          </div>
+        )}
+      </div>
+      <div className="sample-disclaimer"><span>ⓘ</span><p>{isSample ? "This is an illustrative sample, not a confirmed travel plan. Places, activities, and times are examples only." : "Matches use event dates and locations from the current working dataset. Dates, ticket prices, venues, and programmes may change. Transport, accommodation, and meal costs are not calculated; confirm all details with official sources before travelling."}</p></div>
+      <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
+    </main>
+  );
 }
 
 function DestinationsPage({ onComingSoon }: { onComingSoon: (feature: string) => void }) {
@@ -437,6 +644,25 @@ export default function HomePage() {
   const [queryForExplore, setQueryForExplore] = useState("");
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [itineraryPlan, setItineraryPlan] = useState<ItineraryPlan | null>(null);
+  const [itinerarySaved, setItinerarySaved] = useState(false);
+  const [savedPlanLoaded, setSavedPlanLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(ITINERARY_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as ItineraryPlan;
+        if (parsed?.preferences && Array.isArray(parsed.matches) && Array.isArray(parsed.dayDates) && parsed.visitDates) {
+          setItineraryPlan(parsed);
+          setItinerarySaved(true);
+        }
+      }
+    } catch {
+      // Ignore unreadable browser storage and let the user create a fresh plan.
+    }
+    setSavedPlanLoaded(true);
+  }, []);
 
   const navigate = (target: View) => {
     if (target === "event" && !selectedEvent) target = "explore";
@@ -449,6 +675,45 @@ export default function HomePage() {
   const toggleFavorite = (event: FestivalRecord) => setSavedIds((old) => { const next = new Set(old); if (next.has(event.no)) next.delete(event.no); else next.add(event.no); return next; });
   const exploreSearch = (query: string) => { setQueryForExplore(query); setView("explore"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const showComingSoon = (feature: string) => setComingSoonFeature(feature);
+
+  const handleCreateTripPlan = (preferences: TripPreferences) => {
+    try {
+      const nextPlan = createTripPlan(preferences);
+      setItineraryPlan(nextPlan);
+      setItinerarySaved(false);
+      try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
+      navigate("itinerary");
+    } catch {
+      setComingSoonFeature("Your trip dates could not be used to create an itinerary");
+    }
+  };
+
+  const handleShowSamplePlan = () => {
+    setItineraryPlan(createSamplePlan());
+    setItinerarySaved(false);
+    navigate("itinerary");
+  };
+
+  const handleSaveItinerary = () => {
+    if (!itineraryPlan) return false;
+    try {
+      window.localStorage.setItem(ITINERARY_STORAGE_KEY, JSON.stringify(itineraryPlan));
+      setItinerarySaved(true);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleRemoveItineraryEvent = (eventNo: number) => {
+    setItineraryPlan((current) => current ? {
+      ...current,
+      matches: current.matches.filter((event) => event.no !== eventNo),
+      visitDates: Object.fromEntries(Object.entries(current.visitDates).filter(([key]) => Number(key) !== eventNo)),
+    } : current);
+    setItinerarySaved(false);
+    try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
+  };
 
   useEffect(() => {
     const handleFooterNavigation = (event: Event) => {
@@ -468,8 +733,8 @@ export default function HomePage() {
     {view === "home" && <HomeLanding onNavigate={navigate} onExploreSearch={exploreSearch} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} onComingSoon={showComingSoon} />}
     {view === "explore" && <ExplorePage key={queryForExplore} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} initialQuery={queryForExplore} />}
     {view === "event" && selectedEvent && <DetailPage event={selectedEvent} onBack={() => navigate("explore")} onComingSoon={showComingSoon} favorite={savedIds.has(selectedEvent.no)} onFavorite={() => toggleFavorite(selectedEvent)} />}
-    {view === "planner" && <PlannerPage onComingSoon={showComingSoon} onShowItinerary={() => navigate("itinerary")} />}
-    {view === "itinerary" && <ItineraryPage onComingSoon={showComingSoon} onPlanner={() => navigate("planner")} />}
+    {view === "planner" && <PlannerPage initialPreferences={itineraryPlan?.preferences} onCreatePlan={handleCreateTripPlan} onShowItinerary={handleShowSamplePlan} />}
+    {view === "itinerary" && savedPlanLoaded && <ItineraryPage plan={itineraryPlan} isSaved={itinerarySaved} onSave={handleSaveItinerary} onRemoveEvent={handleRemoveItineraryEvent} onPlanner={() => navigate("planner")} onShowSample={handleShowSamplePlan} onExplore={() => navigate("explore")} onOpenEvent={openEvent} />}
     {view === "destinations" && <DestinationsPage onComingSoon={showComingSoon} />}
     {comingSoonFeature && <ComingSoonModal feature={comingSoonFeature} onClose={() => setComingSoonFeature(null)} />}
   </>;
