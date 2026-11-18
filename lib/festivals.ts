@@ -1,4 +1,5 @@
 import rawFestivals from "@/data/festivals.json";
+import rawDemoFestivals from "@/data/demo-festivals.json";
 
 export type FestivalRecord = {
   no: number;
@@ -33,9 +34,19 @@ export type FestivalRecord = {
   perlu_verifikasi_tanggal: string | null;
   catatan_verifikasi: string | null;
   catatan_sumber_lain: string | null;
+  data_status?: "official" | "demo";
+  demo_disclaimer?: string;
 };
 
-export const festivals = rawFestivals as FestivalRecord[];
+export const officialFestivals = rawFestivals as FestivalRecord[];
+export const demoFestivals = rawDemoFestivals as FestivalRecord[];
+
+// Set to false when verified upcoming event data replaces the demo records.
+export const INCLUDE_DEMO_EVENTS = true;
+export const demoFestivalCount = INCLUDE_DEMO_EVENTS ? demoFestivals.length : 0;
+export const festivals: FestivalRecord[] = INCLUDE_DEMO_EVENTS
+  ? [...officialFestivals, ...demoFestivals]
+  : officialFestivals;
 
 export function eventStatus(event: FestivalRecord, now = new Date()) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -75,6 +86,7 @@ function formatSingleDate(value: string) {
 }
 
 export function priceLabel(event: FestivalRecord) {
+  if (event.data_status === "demo") return "Demo only — no price set";
   if (event.harga_status?.toLowerCase().includes("gratis")) return "Free entry listed";
   if (typeof event.harga_min_rp === "number" && typeof event.harga_maks_rp === "number") {
     if (event.harga_min_rp === event.harga_maks_rp) {

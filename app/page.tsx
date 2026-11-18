@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   eventStatus,
   festivals,
+  demoFestivalCount,
   formatDateRange,
   priceLabel,
   type FestivalRecord,
@@ -96,6 +97,7 @@ function Brand({ onClick }: { onClick: () => void }) {
 
 function StatusPill({ event }: { event: FestivalRecord }) {
   const status = eventStatus(event);
+  if (event.data_status === "demo") return <span className="status-pill status-demo">Demo listing</span>;
   const label = status === "upcoming" ? "Upcoming" : status === "ongoing" ? "Happening now" : status === "past" ? "Past event" : "Date to confirm";
   return <span className={`status-pill status-${status}`}>{label}</span>;
 }
@@ -185,7 +187,7 @@ function DetailPage({
     <main className="content-page detail-page">
       <button className="back-link" onClick={onBack}>← Back to explore</button>
       <div className="detail-title-row">
-        <div className="detail-title-copy"><div className="eyebrow">CULTURAL EVENT GUIDE</div><h1>{event.nama_event}</h1><div className="detail-location"><span>⌖</span> {locationLabel(event)}</div><div className="detail-title-meta"><span>▦ {formatDateRange(event)}</span><span className="meta-dot">•</span><StatusPill event={event} /></div></div>
+        <div className="detail-title-copy"><div className="eyebrow">{event.data_status === "demo" ? "FICTIONAL DEMO EVENT · NOT A REAL ANNOUNCEMENT" : "CULTURAL EVENT GUIDE"}</div><h1>{event.nama_event}</h1><div className="detail-location"><span>⌖</span> {locationLabel(event)}</div><div className="detail-title-meta"><span>▦ {formatDateRange(event)}</span><span className="meta-dot">•</span><StatusPill event={event} /></div></div>
         <div className="detail-actions"><button className={`button button-secondary save-detail ${favorite ? "is-favorite" : ""}`} onClick={onFavorite}>{favorite ? "♥ Saved" : "♡ Save event"}</button><button className="button button-primary" onClick={() => onComingSoon("Personalised trip planning for this event")}>Plan a trip <span>↗</span></button></div>
       </div>
       <DetailGallery event={event} onGalleryClick={() => onComingSoon("Full event photo gallery")} />
@@ -218,6 +220,9 @@ function ThreeASection({ event }: { event: FestivalRecord }) {
 }
 
 function SourcePanel({ event }: { event: FestivalRecord }) {
+  if (event.data_status === "demo") {
+    return <section className="source-panel demo-source-panel"><div className="source-symbol">ⓘ</div><div className="source-copy"><strong>Fictional demo data — not for travel planning</strong><p>{event.demo_disclaimer || "This is a fictional record created only to test FestiNesia. It is not a real or announced event."}</p><small>Replace this demo record with verified organiser or official tourism information before public travel use.</small></div></section>;
+  }
   const links = [
     event.url_sumber ? { label: "Open KEN catalogue", url: event.url_sumber } : null,
     event.harga_sumber ? { label: "Open event information", url: event.harga_sumber } : null,
@@ -271,13 +276,13 @@ function HomeLanding({
             <label className="hero-search-field budget-field"><span>◈</span><select value={heroBudget} onChange={(e) => setHeroBudget(e.target.value)} aria-label="Budget"><option>Any budget</option><option>Under Rp500,000</option><option>Rp500,000–1,000,000</option><option>Rp1,000,000–2,000,000</option></select></label>
             <button className="button button-primary hero-search-submit" type="submit">Explore <span>↗</span></button>
           </form>
-          <div className="hero-trust-line"><span>✦</span> Public event references <i /> Cultural discovery <i /> Trip inspiration</div>
+          <div className="hero-trust-line"><span>✦</span> Festival listings <i /> Cultural discovery <i /> Trip inspiration</div>
         </div>
         <div className="hero-vertical-note">THE ARCHIPELAGO, ONE STORY AT A TIME</div>
         <div className="hero-caption"><span /> A journey into local culture</div>
       </section>
-      <section className="stats-bar"><div className="stat-cell"><span className="stat-icon stat-green">✺</span><div><strong>{festivals.length}</strong><small>Festival listings</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-orange">◷</span><div><strong>{upcomingCount}</strong><small>Upcoming or ongoing*</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-blue">⌖</span><div><strong>{provinceCount}</strong><small>Provinces represented</small></div></div><p className="stats-note">*Calculated from dates in the<br />working dataset.</p></section>
-      <section className="home-feature-row page-width"><button className="home-feature" onClick={() => onNavigate("explore")}><span className="feature-icon icon-orange">▣</span><strong>Festivals & events</strong><small>Discover cultural celebrations across Indonesia.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("destinations")}><span className="feature-icon icon-blue">⌖</span><strong>Cultural destinations</strong><small>Explore regions known for living traditions.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("planner")}><span className="feature-icon icon-purple">✧</span><strong>Trip planner</strong><small>Personalised itinerary planning is coming soon.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onComingSoon("Complete 3A destination guides")}><span className="feature-icon icon-green">▤</span><strong>3A information</strong><small>Attractions, amenities, and accessibility.</small><span className="feature-arrow">↗</span></button></section>
+      <section className="stats-bar"><div className="stat-cell"><span className="stat-icon stat-green">✺</span><div><strong>{festivals.length}</strong><small>Festival listings</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-orange">◷</span><div><strong>{upcomingCount}</strong><small>Upcoming or ongoing*</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-blue">⌖</span><div><strong>{provinceCount}</strong><small>Provinces represented</small></div></div><p className="stats-note">*Calculated from dates in the<br />working dataset. Includes {demoFestivalCount} fictional demo listings for prototype testing.</p></section>
+      <section className="home-feature-row page-width"><button className="home-feature" onClick={() => onNavigate("explore")}><span className="feature-icon icon-orange">▣</span><strong>Festivals & events</strong><small>Discover cultural celebrations across Indonesia.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("destinations")}><span className="feature-icon icon-blue">⌖</span><strong>Cultural destinations</strong><small>Explore regions known for living traditions.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("planner")}><span className="feature-icon icon-purple">✧</span><strong>Trip planner</strong><small>Plan a cultural trip around your dates and interests.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onComingSoon("Complete 3A destination guides")}><span className="feature-icon icon-green">▤</span><strong>3A information</strong><small>Attractions, amenities, and accessibility.</small><span className="feature-arrow">↗</span></button></section>
       <section className="home-section page-width">
         <div className="section-head"><div><div className="section-kicker">A GOOD PLACE TO START</div><h2>Popular festivals</h2><p>Browse event references from across the archipelago.</p></div><button className="text-arrow" onClick={() => onNavigate("explore")}>View all events <span>→</span></button></div>
         <div className="event-grid-home">{popular.map((event) => <EventCard key={event.no} event={event} onOpen={onOpenEvent} isFavorite={favorites.has(event.no)} onToggleFavorite={onToggleFavorite} compact />)}</div>
@@ -326,11 +331,11 @@ function ExplorePage({
   return <main className="content-page explore-page"><div className="page-intro"><div className="section-kicker">FIND YOUR NEXT CULTURAL EXPERIENCE</div><h1>Explore festivals & culture</h1><p>Discover events across Indonesia, from regional celebrations to living traditions.</p></div>
     <div className="explore-search-row"><span>⌕</span><input value={query} onChange={(e) => { setQuery(e.target.value); setVisible(12); }} placeholder="Search a festival, destination, or city..." aria-label="Search event listings" /><kbd>/</kbd><span className="search-results-total">{results.length} listings</span></div>
     <div className="category-scroll">{categories.map((item) => <button key={item} onClick={() => { setCategory(item); setVisible(12); }} className={`category-chip ${category === item ? "category-active" : ""}`}>{item}</button>)}</div>
-    <div className="explore-layout"><aside className="filters-sidebar"><div className="filters-heading"><strong>Filters</strong><button onClick={clear}>Reset</button></div><label className="filter-group"><span>Location</span><select value={province} onChange={(e) => setProvince(e.target.value)}><option value="all">All provinces</option>{provinces.map((p) => <option key={p} value={p}>{p}</option>)}</select></label><label className="filter-group"><span>When</span><select value={timing} onChange={(e) => setTiming(e.target.value as Timing)}><option value="all">Any time</option><option value="upcoming">Upcoming</option><option value="ongoing">Happening now</option><option value="past">Past events</option></select></label><div className="filter-group"><span>Budget guidance</span><label className="radio-line"><input type="radio" name="budget" checked={budget === "all"} onChange={() => setBudget("all")} /> Any budget</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "free"} onChange={() => setBudget("free")} /> Free entry listed</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under500"} onChange={() => setBudget("under500")} /> Under Rp500,000</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under1m"} onChange={() => setBudget("under1m")} /> Up to Rp1,000,000</label></div><button className={`top-filter-sidebar ${topOnly ? "selected" : ""}`} onClick={() => setTopOnly((v) => !v)}><span>✦</span><span><strong>KEN Top 10</strong><small>Highlight selected KEN listings</small></span><span className="toggle-track"><i /></span></button><div className="filter-help"><span>ⓘ</span><p>Filters use the current working dataset. Event schedules should be checked with official sources.</p></div></aside>
+    <div className="explore-layout"><aside className="filters-sidebar"><div className="filters-heading"><strong>Filters</strong><button onClick={clear}>Reset</button></div><label className="filter-group"><span>Location</span><select value={province} onChange={(e) => setProvince(e.target.value)} aria-label="Choose a destination"><option value="all">All provinces</option>{provinces.map((p) => <option key={p} value={p}>{p}</option>)}</select></label><label className="filter-group"><span>When</span><select value={timing} onChange={(e) => setTiming(e.target.value as Timing)}><option value="all">Any time</option><option value="upcoming">Upcoming</option><option value="ongoing">Happening now</option><option value="past">Past events</option></select></label><div className="filter-group"><span>Budget guidance</span><label className="radio-line"><input type="radio" name="budget" checked={budget === "all"} onChange={() => setBudget("all")} /> Any budget</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "free"} onChange={() => setBudget("free")} /> Free entry listed</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under500"} onChange={() => setBudget("under500")} /> Under Rp500,000</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under1m"} onChange={() => setBudget("under1m")} /> Up to Rp1,000,000</label></div><button className={`top-filter-sidebar ${topOnly ? "selected" : ""}`} onClick={() => setTopOnly((v) => !v)}><span>✦</span><span><strong>KEN Top 10</strong><small>Highlight selected KEN listings</small></span><span className="toggle-track"><i /></span></button><div className="filter-help"><span>ⓘ</span><p>The catalogue includes {demoFestivalCount} fictional demo listings for prototype testing. They are labelled “Demo listing” and are not real event announcements.</p></div></aside>
       <section className="results-main"><div className="results-heading"><div><h2>{category === "All" ? "Cultural events" : category}</h2><p>Showing {Math.min(visible, results.length)} of {results.length} listings</p></div><label className="sort-select">Sort by <select defaultValue="relevant"><option value="relevant">Recommended</option><option value="name">Name A–Z</option></select></label></div>
       {results.length ? <div className="event-grid-explore">{results.slice(0, visible).map((event) => <EventCard key={event.no} event={event} onOpen={onOpenEvent} isFavorite={favorites.has(event.no)} onToggleFavorite={onToggleFavorite} />)}</div> : <div className="empty-results"><span>⌕</span><h3>No matches found</h3><p>Try removing a filter or searching for another location.</p><button className="button button-primary" onClick={clear}>Clear all filters</button></div>}
       {visible < results.length && <button className="button button-secondary show-more" onClick={() => setVisible((v) => v + 12)}>Load more events ↓</button>}
-      <div className="dataset-disclaimer"><span>ⓘ</span><p><strong>A note on event data.</strong> This prototype contains 125 listings from the KEN 2026 working dataset. Dates, prices, and visitor details may have changed and are not live-verified.</p></div>
+      <div className="dataset-disclaimer"><span>ⓘ</span><p><strong>A note on event data.</strong> The catalogue combines the 125 KEN 2026 working-dataset records with {demoFestivalCount} fictional demo listings created to test the prototype. Demo listings are not real or announced events. Official records are not live-verified; confirm dates, prices, and visitor details with organisers before travelling.</p></div>
       </section></div><Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
   </main>;
 }
@@ -377,8 +382,12 @@ function PlannerPage({
       return;
     }
     const tripDays = listTripDates(startDate, endDate);
-    if (tripDays.length > 14) {
-      setFormError("For this prototype, please choose a trip of up to 14 days.");
+    if (tripDays.length < 1 || tripDays.length > 14) {
+      setFormError("For this prototype, please choose a trip between 1 and 14 days.");
+      return;
+    }
+    if (travelers < 1 || travelers > 12) {
+      setFormError("Please choose between 1 and 12 travellers.");
       return;
     }
     if (!interest.length) {
@@ -402,10 +411,10 @@ function PlannerPage({
           <span className="planner-banner-icon">✦</span>
           <div>
             <strong>Your next story starts here</strong>
-            <p>Choose your preferences and discover festival listings that overlap with your travel dates.</p>
+            <p>Choose your preferences and discover event listings that overlap with your travel dates. Demo records are included for prototype testing and are clearly labelled.</p>
           </div>
         </div>
-        <span className="coming-badge">BASED ON THE CURRENT EVENT DATASET</span>
+        <span className="coming-badge">{demoFestivalCount} FICTIONAL DEMO LISTINGS INCLUDED</span>
       </div>
       <div className="planner-layout">
         <form className="planner-settings" onSubmit={handleSubmit} noValidate>
@@ -428,8 +437,8 @@ function PlannerPage({
             <label className="full-field"><span>End date</span><input type="date" min={startDate || today} value={endDate} onChange={(e) => { setEndDate(e.target.value); setFormError(""); }} required /></label>
           </div>
           <label className="full-field">
-            <span>Budget per person</span>
-            <select value={budget} onChange={(e) => setBudget(e.target.value)}>
+            <span>Travel budget per person (planning preference)</span>
+            <select value={budget} onChange={(e) => { setBudget(e.target.value); setFormError(""); }}>
               <option>Under Rp500,000</option><option>Rp500,000 – 1,000,000</option><option>Rp1,000,000 – 2,000,000</option><option>Over Rp2,000,000</option><option>Not sure yet</option>
             </select>
           </label>
@@ -439,32 +448,42 @@ function PlannerPage({
           </div>
           <div className="travelers-field">
             <span>Number of travellers</span>
-            <div className="stepper"><button type="button" onClick={() => setTravelers((n) => Math.max(1, n - 1))} aria-label="Remove traveller">−</button><strong>{travelers}</strong><button type="button" onClick={() => setTravelers((n) => Math.min(12, n + 1))} aria-label="Add traveller">+</button></div>
+            <div className="stepper"><button type="button" onClick={() => { setTravelers((n) => Math.max(1, n - 1)); setFormError(""); }} aria-label="Remove traveller">−</button><strong>{travelers}</strong><button type="button" onClick={() => { setTravelers((n) => Math.min(12, n + 1)); setFormError(""); }} aria-label="Add traveller">+</button></div>
           </div>
           {formError && <p className="planner-form-error" role="alert">{formError}</p>}
           <button className="button button-primary button-wide planner-generate" type="submit">Create My Itinerary <span>↗</span></button>
-          <p className="form-note">We match published event dates and locations. Budget is a preference only; transport, accommodation, and meal costs are not calculated.</p>
+          <p className="form-note">We match event dates and locations, then rank results by your interests. Budget is recorded as a preference only; total transport, accommodation, and meal costs are not calculated.</p>
         </form>
-        <section className="planner-assistant">
-          <div className="assistant-top">
-            <div className="assistant-avatar">⌖</div>
-            <div><strong>Your Travel Guide</strong><small><span className="status-dot" /> Planning resources · Dataset preview</small></div>
-            <span className="assistant-more">3A</span>
+        <aside className="planner-guide" aria-labelledby="planner-guide-title">
+          <div className="guide-header">
+            <span className="guide-header-icon" aria-hidden="true">⌖</span>
+            <div>
+              <h2 id="planner-guide-title">Trip Planning Guide</h2>
+              <p>Helpful information for planning a cultural visit</p>
+            </div>
+            <span className="guide-3a-mark">3A</span>
           </div>
-          <div className="assistant-chat">
-            <div className="assistant-message">
-              <strong>Your preferences shape the journey</strong>
-              <p>We compare your destination and travel dates with festival listings in the current working dataset. Your interests help rank the most relevant matches.</p>
+          <div className="guide-content">
+            <section className="guide-intro-card">
+              <strong>Plan a meaningful cultural journey</strong>
+              <p>Choose your destination, travel dates, budget, and interests to find festival listings that may fit your trip.</p>
+            </section>
+            <div className="guide-section-label">HOW IT WORKS</div>
+            <ol className="guide-steps">
+              <li><span>1</span><div><strong>Set your preferences</strong><p>Choose where and when you want to travel.</p></div></li>
+              <li><span>2</span><div><strong>Review matching events</strong><p>We compare your dates and destination with the current event dataset.</p></div></li>
+              <li><span>3</span><div><strong>Check details before travelling</strong><p>Confirm dates, tickets, and visitor information with official sources.</p></div></li>
+            </ol>
+            <div className="guide-section-label">THE TOURISM 3A CHECKLIST</div>
+            <div className="guide-3a-list">
+              <article className="guide-3a-card"><span className="guide-3a-icon guide-3a-attraction">✺</span><div><strong>Attractions</strong><p>Discover festivals, traditional performances, and heritage experiences.</p></div></article>
+              <article className="guide-3a-card"><span className="guide-3a-icon guide-3a-amenities">⌂</span><div><strong>Amenities</strong><p>Check accommodation, food options, and facilities near places you plan to visit.</p></div></article>
+              <article className="guide-3a-card"><span className="guide-3a-icon guide-3a-access">↗</span><div><strong>Accessibility</strong><p>Consider transport options, local routes, and travel times.</p></div></article>
             </div>
-            <div className="suggestion-title">THINGS TO CONSIDER</div>
-            <div className="suggestions">
-              <div className="assistant-message"><strong>Attractions</strong><p>Explore festivals, traditional performances, and heritage experiences listed for your destination.</p></div>
-              <div className="assistant-message"><strong>Amenities</strong><p>Check accommodation, food options, and facilities near the places you plan to visit.</p></div>
-              <div className="assistant-message"><strong>Accessibility</strong><p>Confirm transport options, local routes, and travel time before setting your itinerary.</p></div>
-            </div>
+            <p className="guide-data-note">Budget is recorded as a preference. Total trip costs are not calculated because transport, accommodation, and meal prices are not yet available.</p>
           </div>
           <button className="sample-itinerary-link" onClick={onShowItinerary}>Preview an illustrative 3-day itinerary <span>→</span></button>
-        </section>
+        </aside>
       </div>
       <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
     </main>
@@ -501,6 +520,7 @@ function ItineraryPage({
   isSaved,
   onSave,
   onRemoveEvent,
+  onMoveEvent,
   onPlanner,
   onShowSample,
   onExplore,
@@ -510,6 +530,7 @@ function ItineraryPage({
   isSaved: boolean;
   onSave: () => boolean;
   onRemoveEvent: (eventNo: number) => void;
+  onMoveEvent: (eventNo: number, direction: "up" | "down") => void;
   onPlanner: () => void;
   onShowSample: () => void;
   onExplore: () => void;
@@ -566,11 +587,19 @@ function ItineraryPage({
         <div>
           <div className="section-kicker">{isSample ? "SAMPLE TRIP · ILLUSTRATIVE IDEAS" : "YOUR TRIP PLAN · WORKING DATASET"}</div>
           <h1>Your cultural journey</h1>
-          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and times are illustrative and must be checked before travel." : `${plan.matches.length} festival ${plan.matches.length === 1 ? "listing" : "listings"} match your destination and travel dates. Event details should be confirmed with official sources.`}</p>
+          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and times are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : `${plan.matches.length} festival ${plan.matches.length === 1 ? "listing" : "listings"} match your destination and travel dates. Each festival is assigned to the first overlapping day in your trip. Event details should be confirmed with official sources.`}{!isSample && plan.matches.some((event) => event.data_status === "demo") ? ` ${plan.matches.filter((event) => event.data_status === "demo").length} match(es) are fictional demo records for prototype testing, not real event announcements.` : ""}</p>
         </div>
         <div className="itinerary-head-actions">
-          {!isSample && <button className={`button button-secondary ${editMode ? "button-edit-active" : ""}`} onClick={() => { setEditMode((value) => !value); setSaveMessage(""); }}>{editMode ? "Done editing" : "✎ Edit itinerary"}</button>}
-          <button className="button button-primary" onClick={handleSave}>{isSaved ? "Saved ✓" : "Save itinerary"}</button>
+          {isSample ? (
+            <button className="button button-primary" onClick={onPlanner}>Create your own trip <span>↗</span></button>
+          ) : plan.matches.length === 0 ? (
+            <button className="button button-primary" onClick={onPlanner}>Adjust trip preferences <span>↗</span></button>
+          ) : (
+            <>
+              <button className={`button button-secondary ${editMode ? "button-edit-active" : ""}`} onClick={() => { setEditMode((value) => !value); setSaveMessage(""); }}>{editMode ? "Done editing" : "✎ Edit itinerary"}</button>
+              <button className="button button-primary" onClick={handleSave}>{isSaved ? "Saved ✓" : "Save itinerary"}</button>
+            </>
+          )}
         </div>
       </div>
       <div className="itinerary-summary">
@@ -580,7 +609,19 @@ function ItineraryPage({
         <span>◈ {preferences.budget === "Not sure yet" || preferences.budget === "Not estimated" ? "Budget not estimated" : `${preferences.budget} per person`}</span>
       </div>
       {saveMessage && <p className={`itinerary-save-message ${saveMessage.startsWith("Itinerary saved") ? "is-success" : "is-error"}`} role="status">{saveMessage}</p>}
-      {editMode && <div className="itinerary-edit-note">Edit mode: use the × button on a festival card to remove it from this itinerary. The original event remains in Explore.</div>}
+      {editMode && <div className="itinerary-edit-note">Edit mode: use ↑ and ↓ to reorder festivals within the same day, or × to remove one from this itinerary. Original event listings remain in Explore.</div>}
+      {(!isSample && plan.matches.length === 0) ? (
+        <div className="itinerary-no-matches">
+          <span aria-hidden="true">⌕</span>
+          <div className="section-kicker">{plan.removedEventNos?.length ? "YOUR ITINERARY IS EMPTY" : "NO MATCHING EVENTS FOUND"}</div>
+          <h2>{plan.removedEventNos?.length ? "You removed all festival listings" : "Let's adjust your journey"}</h2>
+          <p>{plan.removedEventNos?.length ? "The matching festival listings were removed from this plan. You can adjust your preferences to create a new itinerary or explore the event catalogue." : "No event in the current dataset matches your selected destination and travel dates. Try a different date range or choose another destination. You can also browse the full event catalogue."}</p>
+          <div className="itinerary-empty-actions">
+            <button className="button button-primary" onClick={onPlanner}>Adjust trip preferences</button>
+            <button className="button button-secondary" onClick={onExplore}>Explore festivals</button>
+          </div>
+        </div>
+      ) : <>
       <div className="day-tabs">
         {dayDates.map((date, index) => {
           const count = plan.matches.filter((event) => plan.visitDates[String(event.no)] === date).length;
@@ -588,6 +629,7 @@ function ItineraryPage({
         })}
       </div>
       <div className="itinerary-list">
+        {!isSample && plan.matches.some((event) => event.data_status === "demo") && <div className="demo-data-notice"><strong>Demo data included.</strong> Fictional events may appear in this itinerary to test the planning flow. They are not real announcements and must not be used for travel planning.</div>}
         {isSample ? selectedSampleActivities.map((activity, index) => (
           <article className="itinerary-activity" key={`${safeActiveDay}-${activity.time}-${activity.title}`}>
             <div className="activity-time">{activity.time}<span /></div>
@@ -599,30 +641,42 @@ function ItineraryPage({
         )) : selectedDayEvents.length ? selectedDayEvents.map((event, index) => {
           const photo = getEventPhoto(event, index);
           const description = event.deskripsi_festinesia?.trim() || "This event appears in the current working dataset. Check the official source for programme details and visitor information.";
+          const reasons = plan.matchReasons?.[String(event.no)] ?? [];
           return (
             <article className="itinerary-activity itinerary-event-activity" key={event.no}>
               <div className="activity-time">Festival<span /></div>
               <div className="activity-line"><i /></div>
               <div className="activity-image"><img src={photo.url} alt={photo.illustrative ? `Illustrative photo for ${event.nama_event}` : event.nama_event} loading="lazy" /><span className="itinerary-image-label">{photo.illustrative ? "Illustrative" : "Event photo"}</span></div>
               <div className="activity-copy">
-                <span className={`activity-kind kind-${index % 3}`}>Festival listing</span>
+                <span className={`activity-kind kind-${index % 3}`}>{event.data_status === "demo" ? "DEMO EVENT · FICTIONAL" : "Festival listing"}</span>
                 <h3>{event.nama_event}</h3>
                 <p>{description}</p>
+                {reasons.length > 0 ? <div className="match-reason-row"><span>Why this matches</span>{reasons.map((reason) => <span className="match-reason-chip" key={reason}>{reason}</span>)}</div> : null}
                 <div className="itinerary-event-meta"><span>▦ {formatDateRange(event)}</span><span>⌖ {locationLabel(event)}</span><span>◈ {priceLabel(event)}</span></div>
                 <div className="itinerary-event-actions"><button onClick={() => onOpenEvent(event)}>View event details ↗</button>{event.url_sumber && <a href={event.url_sumber} target="_blank" rel="noreferrer">Official source ↗</a>}</div>
               </div>
-              {editMode ? <button className="activity-more itinerary-remove-button" onClick={() => onRemoveEvent(event.no)} aria-label={`Remove ${event.nama_event} from itinerary`} title="Remove from itinerary">×</button> : <button className="activity-more" onClick={() => onOpenEvent(event)} aria-label={`View ${event.nama_event}`} title="View event details">↗</button>}
+              {editMode ? (
+                <div className="activity-edit-actions" aria-label={`Edit ${event.nama_event}`}>
+                  <button type="button" onClick={() => onMoveEvent(event.no, "up")} disabled={index === 0} aria-label={`Move ${event.nama_event} earlier`} title="Move earlier">↑</button>
+                  <button type="button" onClick={() => onMoveEvent(event.no, "down")} disabled={index === selectedDayEvents.length - 1} aria-label={`Move ${event.nama_event} later`} title="Move later">↓</button>
+                  <button type="button" className="itinerary-remove-button" onClick={() => onRemoveEvent(event.no)} aria-label={`Remove ${event.nama_event} from itinerary`} title="Remove from itinerary">×</button>
+                </div>
+              ) : <button className="activity-more" onClick={() => onOpenEvent(event)} aria-label={`View ${event.nama_event}`} title="View event details">↗</button>}
             </article>
           );
         }) : (
           <div className="itinerary-day-empty">
             <span>✦</span>
             <h3>{plan.matches.length ? "No festival scheduled for this day" : "No matching festival listings yet"}</h3>
-            <p>{plan.matches.length ? "There are no festival listings assigned to this date in the current dataset. You can explore other cultural events or leave this day flexible." : "The current dataset has no event with a confirmed date range matching this destination and trip period. Try different dates or another destination."}</p>
-            <button className="button button-secondary" onClick={onExplore}>Explore festivals</button>
+            <p>This is a flexible day with no matching festival listing in the current dataset. You can keep it open, explore other events, or adjust your trip preferences.</p>
+            <div className="itinerary-empty-actions">
+              <button className="button button-secondary" onClick={onExplore}>Explore festivals</button>
+              <button className="button button-secondary" onClick={onPlanner}>Change dates</button>
+            </div>
           </div>
         )}
       </div>
+      </>}
       <div className="sample-disclaimer"><span>ⓘ</span><p>{isSample ? "This is an illustrative sample, not a confirmed travel plan. Places, activities, and times are examples only." : "Matches use event dates and locations from the current working dataset. Dates, ticket prices, venues, and programmes may change. Transport, accommodation, and meal costs are not calculated; confirm all details with official sources before travelling."}</p></div>
       <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
     </main>
@@ -710,7 +764,28 @@ export default function HomePage() {
       ...current,
       matches: current.matches.filter((event) => event.no !== eventNo),
       visitDates: Object.fromEntries(Object.entries(current.visitDates).filter(([key]) => Number(key) !== eventNo)),
+      removedEventNos: [...(current.removedEventNos ?? []), eventNo],
     } : current);
+    setItinerarySaved(false);
+    try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
+  };
+
+  const handleMoveItineraryEvent = (eventNo: number, direction: "up" | "down") => {
+    setItineraryPlan((current) => {
+      if (!current) return current;
+      const eventDate = current.visitDates[String(eventNo)];
+      if (!eventDate) return current;
+      const dayEvents = current.matches.filter((event) => current.visitDates[String(event.no)] === eventDate);
+      const dayIndex = dayEvents.findIndex((event) => event.no === eventNo);
+      const targetIndex = direction === "up" ? dayIndex - 1 : dayIndex + 1;
+      if (dayIndex < 0 || targetIndex < 0 || targetIndex >= dayEvents.length) return current;
+      const firstPosition = current.matches.findIndex((event) => event.no === dayEvents[dayIndex].no);
+      const secondPosition = current.matches.findIndex((event) => event.no === dayEvents[targetIndex].no);
+      if (firstPosition < 0 || secondPosition < 0) return current;
+      const nextMatches = [...current.matches];
+      [nextMatches[firstPosition], nextMatches[secondPosition]] = [nextMatches[secondPosition], nextMatches[firstPosition]];
+      return { ...current, matches: nextMatches };
+    });
     setItinerarySaved(false);
     try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
   };
@@ -734,7 +809,7 @@ export default function HomePage() {
     {view === "explore" && <ExplorePage key={queryForExplore} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} initialQuery={queryForExplore} />}
     {view === "event" && selectedEvent && <DetailPage event={selectedEvent} onBack={() => navigate("explore")} onComingSoon={showComingSoon} favorite={savedIds.has(selectedEvent.no)} onFavorite={() => toggleFavorite(selectedEvent)} />}
     {view === "planner" && <PlannerPage initialPreferences={itineraryPlan?.preferences} onCreatePlan={handleCreateTripPlan} onShowItinerary={handleShowSamplePlan} />}
-    {view === "itinerary" && savedPlanLoaded && <ItineraryPage plan={itineraryPlan} isSaved={itinerarySaved} onSave={handleSaveItinerary} onRemoveEvent={handleRemoveItineraryEvent} onPlanner={() => navigate("planner")} onShowSample={handleShowSamplePlan} onExplore={() => navigate("explore")} onOpenEvent={openEvent} />}
+    {view === "itinerary" && savedPlanLoaded && <ItineraryPage plan={itineraryPlan} isSaved={itinerarySaved} onSave={handleSaveItinerary} onRemoveEvent={handleRemoveItineraryEvent} onMoveEvent={handleMoveItineraryEvent} onPlanner={() => navigate("planner")} onShowSample={handleShowSamplePlan} onExplore={() => navigate("explore")} onOpenEvent={openEvent} />}
     {view === "destinations" && <DestinationsPage onComingSoon={showComingSoon} />}
     {comingSoonFeature && <ComingSoonModal feature={comingSoonFeature} onClose={() => setComingSoonFeature(null)} />}
   </>;

@@ -17,13 +17,23 @@ export type ItineraryPlan = {
   visitDates: Record<string, string>;
   dayDates: string[];
   createdAt: string;
+  /** Short, transparent reasons explaining why each event appears in the plan. */
+  matchReasons?: Record<string, string[]>;
+  /** Event IDs deliberately removed by the user while editing this generated plan. */
+  removedEventNos?: number[];
 };
 
 export function parseLocalISODate(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  return Number.isNaN(date.getTime()) ? null : date;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  if (Number.isNaN(date.getTime())) return null;
+  // Prevent JavaScript from silently rolling invalid dates (for example, 31 February) into March.
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+  return date;
 }
 
 export function toLocalISODate(date: Date): string {
@@ -91,21 +101,19 @@ function destinationMatches(event: FestivalRecord, destination: string): boolean
   const selected = normalize(destination);
   if (eventProvince === selected) return true;
 
-  // The user-facing label "Yogyakarta" is also used for the dataset value "DI Yogyakarta".
-  if (selected === "yogyakarta") {
-    return eventProvince === "di yogyakarta" || eventProvince === "daerah istimewa yogyakarta";
-  }
-  return false;
+  const yogyakartaAliases = new Set(["yogyakarta", "di yogyakarta", "daerah istimewa yogyakarta"]);
+  return yogyakartaAliases.has(selected) && yogyakartaAliases.has(eventProvince);
 }
 
-function interestScore(event: FestivalRecord, interests: string[]): number {
-  if (!interests.length) return 0;
+function interestMatches(event: FestivalRecord, interests: string[]): string[] {
+  if (!interests.length) return [];
   const text = normalize([
     event.nama_event,
     event.catatan,
     event.deskripsi_festinesia,
     event.atraksi,
     event.amenitas,
+    event.aksesibilitas_festinesia,
   ].filter(Boolean).join(" "));
 
   const patterns: Record<string, RegExp> = {
@@ -117,7 +125,7 @@ function interestScore(event: FestivalRecord, interests: string[]): number {
     "Local communities": /community|communities|masyarakat|desa|village|kampung|rakyat|lokal/,
   };
 
-  return interests.reduce((score, interest) => score + (patterns[interest]?.test(text) ? 1 : 0), 0);
+  return interests.filter((interest) => patterns[interest]?.test(text));
 }
 
 export function createTripPlan(
@@ -131,6 +139,9 @@ export function createTripPlan(
   if (!tripStart || !tripEnd || tripEnd < tripStart || !dayDates.length) {
     throw new Error("Please choose a valid travel date range.");
   }
+  if (dayDates.length > 14) {
+    throw new Error("For this prototype, please choose a trip of up to 14 days.");
+  }
 
   const candidates = records.flatMap((event) => {
     const eventStart = event.tanggal_mulai ? parseLocalISODate(event.tanggal_mulai) : null;
@@ -139,7 +150,8 @@ export function createTripPlan(
     if (eventStart > tripEnd || eventEnd < tripStart) return [];
     if (!destinationMatches(event, preferences.destination)) return [];
     const visitDate = eventStart < tripStart ? preferences.startDate : toLocalISODate(eventStart);
-    return [{ event, visitDate, score: interestScore(event, preferences.interests) }];
+    const matchedInterests = interestMatches(event, preferences.interests);
+    return [{ event, visitDate, matchedInterests, score: matchedInterests.length }];
   });
 
   candidates.sort((a, b) => {
@@ -152,6 +164,12 @@ export function createTripPlan(
     preferences,
     matches: candidates.map((candidate) => candidate.event),
     visitDates: Object.fromEntries(candidates.map((candidate) => [String(candidate.event.no), candidate.visitDate])),
+    matchReasons: Object.fromEntries(candidates.map((candidate) => [
+      String(candidate.event.no),
+      candidate.matchedInterests.length
+        ? candidate.matchedInterests
+        : ["Matches your destination and travel dates"],
+    ])),
     dayDates,
     createdAt: new Date().toISOString(),
   };
