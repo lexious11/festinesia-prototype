@@ -12,7 +12,6 @@ export type TripPreferences = {
 export type PlannedActivity = {
   id: string;
   date: string;
-  time: string;
   title: string;
   description: string;
   kind: string;
@@ -152,8 +151,8 @@ export function createTripPlan(
   if (!tripStart || !tripEnd || tripEnd < tripStart || !dayDates.length) {
     throw new Error("Please choose a valid travel date range.");
   }
-  if (dayDates.length > 14) {
-    throw new Error("For this prototype, please choose a trip of up to 14 days.");
+  if (dayDates.length > 7) {
+    throw new Error("For this prototype, please choose a trip of up to 7 days.");
   }
 
   const candidates = records.flatMap((event) => {
@@ -204,13 +203,13 @@ export function buildGeneratedActivities(plan: ItineraryPlan): PlannedActivity[]
     const events = plan.matches.filter((event) => plan.visitDates[String(event.no)] === date);
     const base: PlannedActivity[] = [
       {
-        id: `idea-${date}-morning`, date, time: "09:00",
+        id: `idea-${date}-morning`, date,
         title: "Explore local attractions",
         description: "Choose a cultural, heritage, or nature attraction in your destination. Check its location and opening hours before visiting.",
         kind: "Attractions", source: "suggestion",
       },
       {
-        id: `idea-${date}-lunch`, date, time: "12:00",
+        id: `idea-${date}-lunch`, date,
         title: "Enjoy a local culinary break",
         description: "Discover regional dishes or a local food area. Select a restaurant and confirm its opening hours independently.",
         kind: "Culinary", source: "suggestion",
@@ -221,7 +220,6 @@ export function buildGeneratedActivities(plan: ItineraryPlan): PlannedActivity[]
       activities.push({
         id: `festival-${event.no}-${date}`,
         date,
-        time: index === 0 ? "15:00" : index === 1 ? "18:00" : `${18 + index}:00`,
         title: event.nama_event,
         description: "Festival listing matched from the current dataset. Check the official programme for actual session times and venue details.",
         kind: "Festival",
@@ -231,7 +229,7 @@ export function buildGeneratedActivities(plan: ItineraryPlan): PlannedActivity[]
     });
     if (events.length === 0) {
       activities.push({
-        id: `idea-${date}-afternoon`, date, time: "15:00",
+        id: `idea-${date}-afternoon`, date,
         title: "Discover local culture and heritage",
         description: "Use this flexible time for a traditional arts experience, museum, craft area, or community activity after checking a real venue.",
         kind: "Culture", source: "suggestion",
@@ -239,14 +237,15 @@ export function buildGeneratedActivities(plan: ItineraryPlan): PlannedActivity[]
     }
     if (events.length < 2) {
       activities.push({
-        id: `idea-${date}-evening`, date, time: "18:30",
+        id: `idea-${date}-evening`, date,
         title: "Evening at your own pace",
         description: "Keep time for rest, a local evening atmosphere, or an activity you choose. Confirm transport options for your return.",
         kind: "Flexible time", source: "suggestion",
       });
     }
   }
-  return activities.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  // Activities are appended in a deliberate morning-to-evening sequence for each day.
+  return activities;
 }
 
 export function ensurePlanActivities(plan: ItineraryPlan): ItineraryPlan {

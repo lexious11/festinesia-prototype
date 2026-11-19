@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   eventStatus,
   festivals,
@@ -383,8 +383,8 @@ function PlannerPage({
       return;
     }
     const tripDays = listTripDates(startDate, endDate);
-    if (tripDays.length < 1 || tripDays.length > 14) {
-      setFormError("For this prototype, please choose a trip between 1 and 14 days.");
+    if (tripDays.length < 1 || tripDays.length > 7) {
+      setFormError("For this prototype, please choose a trip between 1 and 7 days.");
       return;
     }
     if (travelers < 1 || travelers > 12) {
@@ -493,21 +493,21 @@ function PlannerPage({
 
 const sampleSchedule = [
   [
-    { time: "09:00", title: "Explore a heritage landmark", kind: "Attraction", description: "An illustrative idea: begin with a cultural site and learn about the region's history.", image: imagePool[6] },
-    { time: "12:00", title: "Taste local specialities", kind: "Culinary", description: "An illustrative idea: take a lunch break and explore local flavours.", image: imagePool[3] },
-    { time: "15:00", title: "Visit a traditional arts area", kind: "Culture", description: "An illustrative idea: discover craft, performance, and community traditions.", image: imagePool[1] },
-    { time: "18:30", title: "Evening cultural experience", kind: "Experience", description: "An illustrative idea: consider an evening activity after checking local schedules.", image: imagePool[0] },
+    { title: "Explore a heritage landmark", kind: "Attraction", description: "An illustrative idea: begin with a cultural site and learn about the region's history.", image: imagePool[6] },
+    { title: "Taste local specialities", kind: "Culinary", description: "An illustrative idea: take a lunch break and explore local flavours.", image: imagePool[3] },
+    { title: "Visit a traditional arts area", kind: "Culture", description: "An illustrative idea: discover craft, performance, and community traditions.", image: imagePool[1] },
+    { title: "Evening cultural experience", kind: "Experience", description: "An illustrative idea: consider an evening activity after checking local schedules.", image: imagePool[0] },
   ],
   [
-    { time: "08:30", title: "A morning at a local market", kind: "Community", description: "An illustrative idea: explore regional produce and daily life.", image: imagePool[3] },
-    { time: "11:00", title: "Museum or heritage visit", kind: "Attraction", description: "An illustrative idea: learn more about regional history and craft.", image: imagePool[6] },
-    { time: "14:00", title: "Workshop or cultural stop", kind: "Culture", description: "An illustrative idea: look for a public workshop or cultural venue.", image: imagePool[1] },
-    { time: "19:00", title: "Local dinner", kind: "Culinary", description: "An illustrative idea: explore regional cuisine and check opening times.", image: imagePool[7] },
+    { title: "A morning at a local market", kind: "Community", description: "An illustrative idea: explore regional produce and daily life.", image: imagePool[3] },
+    { title: "Museum or heritage visit", kind: "Attraction", description: "An illustrative idea: learn more about regional history and craft.", image: imagePool[6] },
+    { title: "Workshop or cultural stop", kind: "Culture", description: "An illustrative idea: look for a public workshop or cultural venue.", image: imagePool[1] },
+    { title: "Local dinner", kind: "Culinary", description: "An illustrative idea: explore regional cuisine and check opening times.", image: imagePool[7] },
   ],
   [
-    { time: "09:00", title: "A slower cultural morning", kind: "Culture", description: "An illustrative idea: return to a favourite area or visit a local craft space.", image: imagePool[6] },
-    { time: "12:00", title: "Lunch and souvenirs", kind: "Culinary", description: "An illustrative idea: find locally made keepsakes and food.", image: imagePool[3] },
-    { time: "15:00", title: "Flexible time for discoveries", kind: "Explore", description: "An illustrative idea: leave time for an activity found during your stay.", image: imagePool[2] },
+    { title: "A slower cultural morning", kind: "Culture", description: "An illustrative idea: return to a favourite area or visit a local craft space.", image: imagePool[6] },
+    { title: "Lunch and souvenirs", kind: "Culinary", description: "An illustrative idea: find locally made keepsakes and food.", image: imagePool[3] },
+    { title: "Flexible time for discoveries", kind: "Explore", description: "An illustrative idea: leave time for an activity found during your stay.", image: imagePool[2] },
   ],
 ];
 
@@ -533,7 +533,7 @@ function ItineraryPage({
   onSave: () => boolean;
   onRemoveActivity: (activityId: string) => void;
   onMoveActivity: (activityId: string, direction: "up" | "down") => void;
-  onAddActivity: (activity: { date: string; time: string; title: string }) => void;
+  onAddActivity: (activity: { date: string; title: string }) => void;
   onPlanner: () => void;
   onShowSample: () => void;
   onExplore: () => void;
@@ -544,7 +544,6 @@ function ItineraryPage({
   const [saveMessage, setSaveMessage] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [customTitle, setCustomTitle] = useState("");
-  const [customTime, setCustomTime] = useState("10:00");
   const dayDates = plan?.dayDates ?? [];
   const safeActiveDay = Math.min(activeDay, Math.max(dayDates.length - 1, 0));
   const activeDate = dayDates[safeActiveDay];
@@ -569,9 +568,8 @@ function ItineraryPage({
   const handleAddActivity = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!activeDate || !customTitle.trim()) return;
-    onAddActivity({ date: activeDate, time: customTime, title: customTitle.trim() });
+    onAddActivity({ date: activeDate, title: customTitle.trim() });
     setCustomTitle("");
-    setCustomTime("10:00");
     setShowAddForm(false);
     setSaveMessage("");
   };
@@ -605,7 +603,7 @@ function ItineraryPage({
         <div>
           <div className="section-kicker">{isSample ? "SAMPLE TRIP · ILLUSTRATIVE IDEAS" : "YOUR TRIP PLAN · FESTIVAL MATCHES + FLEXIBLE IDEAS"}</div>
           <h1>Your cultural journey</h1>
-          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and times are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : eventCount ? `We found ${eventCount} festival ${eventCount === 1 ? "listing" : "listings"} for your destination and dates, then filled the remaining time with flexible activity ideas. Confirm all venues and programme times before travelling.` : "No festival listing matched your destination and dates, so we prepared a flexible day-by-day outline. Add verified places or adjust your trip preferences before travelling."}{!isSample && plan.matches.some((event) => event.data_status === "demo") ? ` ${plan.matches.filter((event) => event.data_status === "demo").length} match(es) are fictional demo records for prototype testing, not real event announcements.` : ""}</p>
+          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and activities are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : eventCount ? `We found ${eventCount} festival ${eventCount === 1 ? "listing" : "listings"} for your destination and dates, then filled the remaining schedule with flexible activity ideas. Activities are shown in suggested order, not fixed appointment times. Confirm all venues and details before travelling.` : "No festival listing matched your destination and dates, so we prepared a flexible day-by-day outline. Add verified places or adjust your trip preferences before travelling."}{!isSample && plan.matches.some((event) => event.data_status === "demo") ? ` ${plan.matches.filter((event) => event.data_status === "demo").length} match(es) are fictional demo records for prototype testing, not real event announcements.` : ""}</p>
         </div>
         <div className="itinerary-head-actions">
           {isSample ? (
@@ -635,8 +633,7 @@ function ItineraryPage({
       <div className="itinerary-list">
         {!isSample && plan.matches.some((event) => event.data_status === "demo") && <div className="demo-data-notice"><strong>Demo data included.</strong> Fictional events may appear in this itinerary to test the planning flow. They are not real announcements and must not be used for travel planning.</div>}
         {isSample ? selectedSampleActivities.map((activity, index) => (
-          <article className="itinerary-activity" key={`${safeActiveDay}-${activity.time}-${activity.title}`}>
-            <div className="activity-time">{activity.time}<span /></div>
+          <article className="itinerary-activity" key={`${safeActiveDay}-${activity.title}`}>
             <div className="activity-line"><i /></div>
             <div className="activity-image"><img src={activity.image} alt="Illustrative cultural travel idea" loading="lazy" /></div>
             <div className="activity-copy"><span className={`activity-kind kind-${index % 3}`}>{activity.kind}</span><h3>{activity.title}</h3><p>{activity.description}</p><span className="itinerary-illustrative-label">Illustrative idea · Not a confirmed venue</span></div>
@@ -649,7 +646,6 @@ function ItineraryPage({
           const kindLabel = isFestival ? (event?.data_status === "demo" ? "DEMO EVENT · FICTIONAL" : "Festival listing") : activity.source === "custom" ? "Your activity" : "Flexible idea";
           return (
             <article className="itinerary-activity itinerary-event-activity" key={activity.id}>
-              <div className="activity-time">{isFestival ? "Time TBC" : activity.time}<span /></div>
               <div className="activity-line"><i /></div>
               <div className="activity-image"><img src={photo.url} alt={isFestival && event ? (photo.illustrative ? `Illustrative photo for ${event.nama_event}` : event.nama_event) : "Illustrative activity"} loading="lazy" /><span className="itinerary-image-label">{isFestival && !photo.illustrative ? "Event photo" : "Illustrative"}</span></div>
               <div className="activity-copy">
@@ -670,17 +666,16 @@ function ItineraryPage({
               </div> : <span className="activity-more" aria-hidden="true">···</span>}
             </article>
           );
-        }) : <div className="itinerary-day-empty"><span>✦</span><h3>This day is open for your own discoveries</h3><p>No scheduled activity remains for this day. Turn on Edit itinerary to add your own activity, or keep this time free.</p></div>}
+        }) : <div className="itinerary-day-empty"><span>✦</span><h3>This day is open for your own discoveries</h3><p>No scheduled activity remains for this day. Turn on Edit itinerary to add your own activity, or leave the day flexible.</p></div>}
         {editMode && !isSample && <>
           {!showAddForm ? <button className="button button-secondary itinerary-add-button" onClick={() => setShowAddForm(true)}>＋ Add your own activity</button> : <form className="itinerary-add-form" onSubmit={handleAddActivity}>
             <strong>Add an activity to Day {safeActiveDay + 1}</strong>
             <input aria-label="Activity name" placeholder="e.g. Visit a local art market" value={customTitle} onChange={(event) => setCustomTitle(event.target.value)} required maxLength={90}/>
-            <label>Time <input type="time" value={customTime} onChange={(event) => setCustomTime(event.target.value)} required/></label>
             <div><button className="button button-primary" type="submit">Add activity</button><button className="button button-secondary" type="button" onClick={() => setShowAddForm(false)}>Cancel</button></div>
           </form>}
         </>}
       </div>
-      <div className="sample-disclaimer"><span>ⓘ</span><p>{isSample ? "This is an illustrative sample, not a confirmed travel plan. Places, activities, and times are examples only." : "Festival listings are matched from the working dataset. Other schedule entries are flexible activity ideas, not verified venues or bookings. Festival programme times, opening hours, transport, and total trip costs must be checked before travelling."}</p></div>
+      <div className="sample-disclaimer"><span>ⓘ</span><p>{isSample ? "This is an illustrative sample, not a confirmed travel plan. Places and activities are examples only; no visit times are assigned." : "Festival listings are matched from the working dataset. Other schedule entries are flexible activity ideas, not verified venues or bookings. Festival programme times, opening hours, transport, and total trip costs must be checked before travelling."}</p></div>
       <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
     </main>
   );
@@ -704,6 +699,68 @@ export default function HomePage() {
   const [itineraryPlan, setItineraryPlan] = useState<ItineraryPlan | null>(null);
   const [itinerarySaved, setItinerarySaved] = useState(false);
   const [savedPlanLoaded, setSavedPlanLoaded] = useState(false);
+  const historyInitialized = useRef(false);
+  const skipNextHistoryPush = useRef(false);
+
+  // Keep in-app view changes in browser history so the phone/browser Back button
+  // returns to the previous FestiNesia screen instead of leaving the site immediately.
+  useEffect(() => {
+    const appState = {
+      view,
+      eventNo: view === "event" ? selectedEvent?.no ?? null : null,
+      query: queryForExplore,
+    };
+
+    if (!historyInitialized.current) {
+      window.history.replaceState(
+        { ...(window.history.state ?? {}), festinesia: appState },
+        "",
+        window.location.href,
+      );
+      historyInitialized.current = true;
+      return;
+    }
+
+    if (skipNextHistoryPush.current) {
+      skipNextHistoryPush.current = false;
+      return;
+    }
+
+    window.history.pushState(
+      { ...(window.history.state ?? {}), festinesia: appState },
+      "",
+      window.location.href,
+    );
+  }, [view, selectedEvent?.no, queryForExplore]);
+
+  useEffect(() => {
+    const handleBrowserBack = (event: PopStateEvent) => {
+      const appState = event.state?.festinesia as
+        | { view?: View; eventNo?: number | null; query?: string }
+        | undefined;
+      skipNextHistoryPush.current = true;
+
+      if (appState?.view && ["home", "explore", "event", "planner", "itinerary", "destinations"].includes(appState.view)) {
+        setView(appState.view);
+        setSelectedEvent(
+          appState.view === "event" && appState.eventNo != null
+            ? festivals.find((item) => item.no === appState.eventNo) ?? null
+            : null,
+        );
+        setQueryForExplore(typeof appState.query === "string" ? appState.query : "");
+      } else {
+        setView("home");
+        setSelectedEvent(null);
+        setQueryForExplore("");
+      }
+
+      setMobileMenuOpen(false);
+      window.scrollTo({ top: 0, behavior: "auto" });
+    };
+
+    window.addEventListener("popstate", handleBrowserBack);
+    return () => window.removeEventListener("popstate", handleBrowserBack);
+  }, []);
 
   useEffect(() => {
     try {
@@ -801,13 +858,12 @@ export default function HomePage() {
     try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
   };
 
-  const handleAddItineraryActivity = (activity: { date: string; time: string; title: string }) => {
+  const handleAddItineraryActivity = (activity: { date: string; title: string }) => {
     setItineraryPlan((current) => current ? {
       ...current,
       activities: [...(current.activities ?? []), {
         id: `custom-${Date.now()}`,
         date: activity.date,
-        time: activity.time,
         title: activity.title,
         description: "Added by you. Confirm the venue, opening hours, and travel details before your visit.",
         kind: "Your activity",
