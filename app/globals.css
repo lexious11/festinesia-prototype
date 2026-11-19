@@ -376,3 +376,15 @@ body{font-size:15px}
   .activity-edit-actions{gap:3px}
   .activity-edit-actions button{width:24px;height:24px}
 }
+
+
+/* Generated itinerary schedule and editable flexible activities */
+.itinerary-illustrative-label{display:inline-block;margin-top:7px;font-size:9px;line-height:1.5;color:#8b929d}
+.itinerary-add-button{margin:4px 0 18px}
+.itinerary-add-form{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:end;border:1px solid #f0d8cc;background:#fffaf7;border-radius:12px;padding:15px;margin:5px 0 20px}
+.itinerary-add-form>strong{grid-column:1/-1;font-size:13px}
+.itinerary-add-form>input,.itinerary-add-form label input{width:100%;min-width:0;border:1px solid #e4e7ec;border-radius:8px;padding:10px 11px;background:#fff;color:var(--ink);font-size:12px}
+.itinerary-add-form label{display:grid;gap:5px;font-size:10px;color:#6f7886}
+.itinerary-add-form>div{grid-column:1/-1;display:flex;gap:8px}
+.itinerary-event-activity .activity-copy{min-width:0}
+@media(max-width:560px){.itinerary-add-form{grid-template-columns:1fr}.itinerary-add-form>strong,.itinerary-add-form>div{grid-column:1}.itinerary-add-form label{grid-column:1}}

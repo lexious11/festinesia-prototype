@@ -9,10 +9,23 @@ export type TripPreferences = {
   interests: string[];
 };
 
+export type PlannedActivity = {
+  id: string;
+  date: string;
+  time: string;
+  title: string;
+  description: string;
+  kind: string;
+  source: "festival" | "suggestion" | "custom";
+  eventNo?: number;
+};
+
 export type ItineraryPlan = {
   mode: "generated" | "sample";
   preferences: TripPreferences;
   matches: FestivalRecord[];
+  /** Day-by-day schedule: verified festival records plus clearly labelled flexible ideas. */
+  activities?: PlannedActivity[];
   /** Maps an event number to the first day of the trip on which it can be visited. */
   visitDates: Record<string, string>;
   dayDates: string[];
@@ -159,20 +172,88 @@ export function createTripPlan(
     return a.visitDate.localeCompare(b.visitDate) || a.event.nama_event.localeCompare(b.event.nama_event, "en");
   });
 
-  return {
+  const matches = candidates.map((candidate) => candidate.event);
+  const visitDates = Object.fromEntries(candidates.map((candidate) => [String(candidate.event.no), candidate.visitDate]));
+  const matchReasons = Object.fromEntries(candidates.map((candidate) => [
+    String(candidate.event.no),
+    candidate.matchedInterests.length
+      ? candidate.matchedInterests
+      : ["Matches your destination and travel dates"],
+  ]));
+  const plan: ItineraryPlan = {
     mode: "generated",
     preferences,
-    matches: candidates.map((candidate) => candidate.event),
-    visitDates: Object.fromEntries(candidates.map((candidate) => [String(candidate.event.no), candidate.visitDate])),
-    matchReasons: Object.fromEntries(candidates.map((candidate) => [
-      String(candidate.event.no),
-      candidate.matchedInterests.length
-        ? candidate.matchedInterests
-        : ["Matches your destination and travel dates"],
-    ])),
+    matches,
+    visitDates,
+    matchReasons,
     dayDates,
     createdAt: new Date().toISOString(),
   };
+  plan.activities = buildGeneratedActivities(plan);
+  return plan;
+}
+
+/**
+ * Creates a full-day outline without inventing venue names. Festival records remain
+ * dataset-backed; all other entries are clearly labelled flexible ideas.
+ */
+export function buildGeneratedActivities(plan: ItineraryPlan): PlannedActivity[] {
+  if (plan.mode !== "generated") return [];
+  const activities: PlannedActivity[] = [];
+  for (const date of plan.dayDates) {
+    const events = plan.matches.filter((event) => plan.visitDates[String(event.no)] === date);
+    const base: PlannedActivity[] = [
+      {
+        id: `idea-${date}-morning`, date, time: "09:00",
+        title: "Explore local attractions",
+        description: "Choose a cultural, heritage, or nature attraction in your destination. Check its location and opening hours before visiting.",
+        kind: "Attractions", source: "suggestion",
+      },
+      {
+        id: `idea-${date}-lunch`, date, time: "12:00",
+        title: "Enjoy a local culinary break",
+        description: "Discover regional dishes or a local food area. Select a restaurant and confirm its opening hours independently.",
+        kind: "Culinary", source: "suggestion",
+      },
+    ];
+    activities.push(...base);
+    events.forEach((event, index) => {
+      activities.push({
+        id: `festival-${event.no}-${date}`,
+        date,
+        time: index === 0 ? "15:00" : index === 1 ? "18:00" : `${18 + index}:00`,
+        title: event.nama_event,
+        description: "Festival listing matched from the current dataset. Check the official programme for actual session times and venue details.",
+        kind: "Festival",
+        source: "festival",
+        eventNo: event.no,
+      });
+    });
+    if (events.length === 0) {
+      activities.push({
+        id: `idea-${date}-afternoon`, date, time: "15:00",
+        title: "Discover local culture and heritage",
+        description: "Use this flexible time for a traditional arts experience, museum, craft area, or community activity after checking a real venue.",
+        kind: "Culture", source: "suggestion",
+      });
+    }
+    if (events.length < 2) {
+      activities.push({
+        id: `idea-${date}-evening`, date, time: "18:30",
+        title: "Evening at your own pace",
+        description: "Keep time for rest, a local evening atmosphere, or an activity you choose. Confirm transport options for your return.",
+        kind: "Flexible time", source: "suggestion",
+      });
+    }
+  }
+  return activities.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+}
+
+export function ensurePlanActivities(plan: ItineraryPlan): ItineraryPlan {
+  if (plan.mode === "generated" && !Array.isArray(plan.activities)) {
+    return { ...plan, activities: buildGeneratedActivities(plan) };
+  }
+  return plan;
 }
 
 export function createSamplePlan(): ItineraryPlan {

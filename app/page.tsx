@@ -13,6 +13,7 @@ import { getEventImage } from "@/lib/event-images";
 import {
   createSamplePlan,
   createTripPlan,
+  ensurePlanActivities,
   formatTripDate,
   formatTripDateRange,
   listTripDates,
@@ -411,7 +412,7 @@ function PlannerPage({
           <span className="planner-banner-icon">✦</span>
           <div>
             <strong>Your next story starts here</strong>
-            <p>Choose your preferences and discover event listings that overlap with your travel dates. Demo records are included for prototype testing and are clearly labelled.</p>
+            <p>Choose your preferences to find matching festivals. We also add flexible activity ideas to create a day-by-day outline; demo records are clearly labelled.</p>
           </div>
         </div>
         <span className="coming-badge">{demoFestivalCount} FICTIONAL DEMO LISTINGS INCLUDED</span>
@@ -422,7 +423,7 @@ function PlannerPage({
             <span className="form-head-icon">✧</span>
             <div>
               <h2>Build your trip</h2>
-              <p>Choose your preferences to find cultural events for your dates.</p>
+              <p>Set your preferences to build a day-by-day cultural trip.</p>
             </div>
           </div>
           <label className="full-field">
@@ -452,7 +453,7 @@ function PlannerPage({
           </div>
           {formError && <p className="planner-form-error" role="alert">{formError}</p>}
           <button className="button button-primary button-wide planner-generate" type="submit">Create My Itinerary <span>↗</span></button>
-          <p className="form-note">We match event dates and locations, then rank results by your interests. Budget is recorded as a preference only; total transport, accommodation, and meal costs are not calculated.</p>
+          <p className="form-note">We place matching festival listings into your trip and add flexible ideas for open time. These ideas are not confirmed venues. Budget is a preference only; total transport, accommodation, and meal costs are not calculated.</p>
         </form>
         <aside className="planner-guide" aria-labelledby="planner-guide-title">
           <div className="guide-header">
@@ -471,7 +472,7 @@ function PlannerPage({
             <div className="guide-section-label">HOW IT WORKS</div>
             <ol className="guide-steps">
               <li><span>1</span><div><strong>Set your preferences</strong><p>Choose where and when you want to travel.</p></div></li>
-              <li><span>2</span><div><strong>Review matching events</strong><p>We compare your dates and destination with the current event dataset.</p></div></li>
+              <li><span>2</span><div><strong>Review matching events</strong><p>We match festivals by destination and dates, then rank them by your interests.</p></div></li>
               <li><span>3</span><div><strong>Check details before travelling</strong><p>Confirm dates, tickets, and visitor information with official sources.</p></div></li>
             </ol>
             <div className="guide-section-label">THE TOURISM 3A CHECKLIST</div>
@@ -519,8 +520,9 @@ function ItineraryPage({
   plan,
   isSaved,
   onSave,
-  onRemoveEvent,
-  onMoveEvent,
+  onRemoveActivity,
+  onMoveActivity,
+  onAddActivity,
   onPlanner,
   onShowSample,
   onExplore,
@@ -529,8 +531,9 @@ function ItineraryPage({
   plan: ItineraryPlan | null;
   isSaved: boolean;
   onSave: () => boolean;
-  onRemoveEvent: (eventNo: number) => void;
-  onMoveEvent: (eventNo: number, direction: "up" | "down") => void;
+  onRemoveActivity: (activityId: string) => void;
+  onMoveActivity: (activityId: string, direction: "up" | "down") => void;
+  onAddActivity: (activity: { date: string; time: string; title: string }) => void;
   onPlanner: () => void;
   onShowSample: () => void;
   onExplore: () => void;
@@ -539,22 +542,38 @@ function ItineraryPage({
   const [activeDay, setActiveDay] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [customTitle, setCustomTitle] = useState("");
+  const [customTime, setCustomTime] = useState("10:00");
   const dayDates = plan?.dayDates ?? [];
   const safeActiveDay = Math.min(activeDay, Math.max(dayDates.length - 1, 0));
   const activeDate = dayDates[safeActiveDay];
-  const dayEvents = plan && activeDate
-    ? plan.matches.filter((event) => plan.visitDates[String(event.no)] === activeDate)
-    : [];
+  const isSample = plan?.mode === "sample";
+  const allActivities = plan?.activities ?? [];
+  const selectedDayActivities = activeDate ? allActivities.filter((activity) => activity.date === activeDate) : [];
+  const selectedSampleActivities = isSample ? (sampleSchedule[safeActiveDay] ?? []) : [];
+  const eventByNo = new Map<number, FestivalRecord>((plan?.matches ?? []).map((event) => [event.no, event] as const));
 
   useEffect(() => {
     setActiveDay(0);
     setEditMode(false);
     setSaveMessage("");
+    setShowAddForm(false);
   }, [plan?.createdAt]);
 
   const handleSave = () => {
     const saved = onSave();
     setSaveMessage(saved ? "Itinerary saved in this browser on this device." : "We could not save the itinerary in this browser. Check your browser storage settings.");
+  };
+
+  const handleAddActivity = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!activeDate || !customTitle.trim()) return;
+    onAddActivity({ date: activeDate, time: customTime, title: customTitle.trim() });
+    setCustomTitle("");
+    setCustomTime("10:00");
+    setShowAddForm(false);
+    setSaveMessage("");
   };
 
   if (!plan) {
@@ -564,7 +583,7 @@ function ItineraryPage({
           <span className="itinerary-empty-icon">✦</span>
           <div className="section-kicker">YOUR NEXT JOURNEY</div>
           <h1>Your cultural itinerary</h1>
-          <p>You have not created a trip plan yet. Choose a destination and travel dates to find festival listings that may fit your journey.</p>
+          <p>You have not created a trip plan yet. Choose a destination and travel dates to find festival listings and flexible cultural activity ideas.</p>
           <div className="itinerary-empty-actions">
             <button className="button button-primary" onClick={onPlanner}>Start planning <span>↗</span></button>
             <button className="button button-secondary" onClick={onShowSample}>Preview a sample itinerary</button>
@@ -576,28 +595,25 @@ function ItineraryPage({
   }
 
   const preferences = plan.preferences;
-  const isSample = plan.mode === "sample";
-  const selectedDayEvents = dayEvents;
-  const selectedSampleActivities = isSample ? (sampleSchedule[safeActiveDay] ?? []) : [];
+  const eventCount = plan.matches.length;
+  const isGenerated = plan.mode === "generated";
 
   return (
     <main className="content-page itinerary-page">
       <button className="back-link" onClick={onPlanner}>← Back to trip planner</button>
       <div className="itinerary-head">
         <div>
-          <div className="section-kicker">{isSample ? "SAMPLE TRIP · ILLUSTRATIVE IDEAS" : "YOUR TRIP PLAN · WORKING DATASET"}</div>
+          <div className="section-kicker">{isSample ? "SAMPLE TRIP · ILLUSTRATIVE IDEAS" : "YOUR TRIP PLAN · FESTIVAL MATCHES + FLEXIBLE IDEAS"}</div>
           <h1>Your cultural journey</h1>
-          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and times are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : `${plan.matches.length} festival ${plan.matches.length === 1 ? "listing" : "listings"} match your destination and travel dates. Each festival is assigned to the first overlapping day in your trip. Event details should be confirmed with official sources.`}{!isSample && plan.matches.some((event) => event.data_status === "demo") ? ` ${plan.matches.filter((event) => event.data_status === "demo").length} match(es) are fictional demo records for prototype testing, not real event announcements.` : ""}</p>
+          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and times are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : eventCount ? `We found ${eventCount} festival ${eventCount === 1 ? "listing" : "listings"} for your destination and dates, then filled the remaining time with flexible activity ideas. Confirm all venues and programme times before travelling.` : "No festival listing matched your destination and dates, so we prepared a flexible day-by-day outline. Add verified places or adjust your trip preferences before travelling."}{!isSample && plan.matches.some((event) => event.data_status === "demo") ? ` ${plan.matches.filter((event) => event.data_status === "demo").length} match(es) are fictional demo records for prototype testing, not real event announcements.` : ""}</p>
         </div>
         <div className="itinerary-head-actions">
           {isSample ? (
             <button className="button button-primary" onClick={onPlanner}>Create your own trip <span>↗</span></button>
-          ) : plan.matches.length === 0 ? (
-            <button className="button button-primary" onClick={onPlanner}>Adjust trip preferences <span>↗</span></button>
           ) : (
             <>
-              <button className={`button button-secondary ${editMode ? "button-edit-active" : ""}`} onClick={() => { setEditMode((value) => !value); setSaveMessage(""); }}>{editMode ? "Done editing" : "✎ Edit itinerary"}</button>
-              <button className="button button-primary" onClick={handleSave}>{isSaved ? "Saved ✓" : "Save itinerary"}</button>
+              <button className={`button button-secondary ${editMode ? "button-edit-active" : ""}`} onClick={() => { setEditMode((value) => !value); setSaveMessage(""); setShowAddForm(false); }}>{editMode ? "Done editing" : "✎ Edit itinerary"}</button>
+              <button className="button button-primary" onClick={handleSave}>{isSaved ? "Save changes" : "Save itinerary"}</button>
             </>
           )}
         </div>
@@ -609,23 +625,11 @@ function ItineraryPage({
         <span>◈ {preferences.budget === "Not sure yet" || preferences.budget === "Not estimated" ? "Budget not estimated" : `${preferences.budget} per person`}</span>
       </div>
       {saveMessage && <p className={`itinerary-save-message ${saveMessage.startsWith("Itinerary saved") ? "is-success" : "is-error"}`} role="status">{saveMessage}</p>}
-      {editMode && <div className="itinerary-edit-note">Edit mode: use ↑ and ↓ to reorder festivals within the same day, or × to remove one from this itinerary. Original event listings remain in Explore.</div>}
-      {(!isSample && plan.matches.length === 0) ? (
-        <div className="itinerary-no-matches">
-          <span aria-hidden="true">⌕</span>
-          <div className="section-kicker">{plan.removedEventNos?.length ? "YOUR ITINERARY IS EMPTY" : "NO MATCHING EVENTS FOUND"}</div>
-          <h2>{plan.removedEventNos?.length ? "You removed all festival listings" : "Let's adjust your journey"}</h2>
-          <p>{plan.removedEventNos?.length ? "The matching festival listings were removed from this plan. You can adjust your preferences to create a new itinerary or explore the event catalogue." : "No event in the current dataset matches your selected destination and travel dates. Try a different date range or choose another destination. You can also browse the full event catalogue."}</p>
-          <div className="itinerary-empty-actions">
-            <button className="button button-primary" onClick={onPlanner}>Adjust trip preferences</button>
-            <button className="button button-secondary" onClick={onExplore}>Explore festivals</button>
-          </div>
-        </div>
-      ) : <>
+      {editMode && <div className="itinerary-edit-note">Edit mode: reorder or remove any activity, or add your own activity. Flexible ideas are suggestions, not confirmed venues. Remember to save your changes.</div>}
       <div className="day-tabs">
         {dayDates.map((date, index) => {
           const count = plan.matches.filter((event) => plan.visitDates[String(event.no)] === date).length;
-          return <button key={date} className={safeActiveDay === index ? "day-tab-active" : ""} onClick={() => setActiveDay(index)}><strong>Day {index + 1}</strong><small>{formatTripDate(date)}</small>{!isSample && <small className="day-event-count">{count} {count === 1 ? "event" : "events"}</small>}</button>;
+          return <button key={date} className={safeActiveDay === index ? "day-tab-active" : ""} onClick={() => setActiveDay(index)}><strong>Day {index + 1}</strong><small>{formatTripDate(date)}</small>{isGenerated && <small className="day-event-count">{count} {count === 1 ? "festival" : "festivals"}</small>}</button>;
         })}
       </div>
       <div className="itinerary-list">
@@ -638,46 +642,45 @@ function ItineraryPage({
             <div className="activity-copy"><span className={`activity-kind kind-${index % 3}`}>{activity.kind}</span><h3>{activity.title}</h3><p>{activity.description}</p><span className="itinerary-illustrative-label">Illustrative idea · Not a confirmed venue</span></div>
             <span className="activity-more" aria-hidden="true">···</span>
           </article>
-        )) : selectedDayEvents.length ? selectedDayEvents.map((event, index) => {
-          const photo = getEventPhoto(event, index);
-          const description = event.deskripsi_festinesia?.trim() || "This event appears in the current working dataset. Check the official source for programme details and visitor information.";
-          const reasons = plan.matchReasons?.[String(event.no)] ?? [];
+        )) : selectedDayActivities.length ? selectedDayActivities.map((activity, index) => {
+          const event = activity.eventNo ? eventByNo.get(activity.eventNo) : undefined;
+          const photo = event ? getEventPhoto(event, index) : { url: imagePool[(index + safeActiveDay) % imagePool.length], illustrative: true };
+          const isFestival = activity.source === "festival" && Boolean(event);
+          const kindLabel = isFestival ? (event?.data_status === "demo" ? "DEMO EVENT · FICTIONAL" : "Festival listing") : activity.source === "custom" ? "Your activity" : "Flexible idea";
           return (
-            <article className="itinerary-activity itinerary-event-activity" key={event.no}>
-              <div className="activity-time">Festival<span /></div>
+            <article className="itinerary-activity itinerary-event-activity" key={activity.id}>
+              <div className="activity-time">{isFestival ? "Time TBC" : activity.time}<span /></div>
               <div className="activity-line"><i /></div>
-              <div className="activity-image"><img src={photo.url} alt={photo.illustrative ? `Illustrative photo for ${event.nama_event}` : event.nama_event} loading="lazy" /><span className="itinerary-image-label">{photo.illustrative ? "Illustrative" : "Event photo"}</span></div>
+              <div className="activity-image"><img src={photo.url} alt={isFestival && event ? (photo.illustrative ? `Illustrative photo for ${event.nama_event}` : event.nama_event) : "Illustrative activity"} loading="lazy" /><span className="itinerary-image-label">{isFestival && !photo.illustrative ? "Event photo" : "Illustrative"}</span></div>
               <div className="activity-copy">
-                <span className={`activity-kind kind-${index % 3}`}>{event.data_status === "demo" ? "DEMO EVENT · FICTIONAL" : "Festival listing"}</span>
-                <h3>{event.nama_event}</h3>
-                <p>{description}</p>
-                {reasons.length > 0 ? <div className="match-reason-row"><span>Why this matches</span>{reasons.map((reason) => <span className="match-reason-chip" key={reason}>{reason}</span>)}</div> : null}
-                <div className="itinerary-event-meta"><span>▦ {formatDateRange(event)}</span><span>⌖ {locationLabel(event)}</span><span>◈ {priceLabel(event)}</span></div>
-                <div className="itinerary-event-actions"><button onClick={() => onOpenEvent(event)}>View event details ↗</button>{event.url_sumber && <a href={event.url_sumber} target="_blank" rel="noreferrer">Official source ↗</a>}</div>
+                <span className={`activity-kind kind-${index % 3}`}>{kindLabel}</span>
+                <h3>{isFestival && event ? event.nama_event : activity.title}</h3>
+                <p>{isFestival && event ? (event.deskripsi_festinesia?.trim() || "This event appears in the current working dataset. Check the official source for programme details and visitor information.") : activity.description}</p>
+                {isFestival && event && <>
+                  {(plan.matchReasons?.[String(event.no)] ?? []).length > 0 && <div className="match-reason-row"><span>Why this matches</span>{(plan.matchReasons?.[String(event.no)] ?? []).map((reason) => <span className="match-reason-chip" key={reason}>{reason}</span>)}</div>}
+                  <div className="itinerary-event-meta"><span>▦ {formatDateRange(event)}</span><span>⌖ {locationLabel(event)}</span><span>◈ {priceLabel(event)}</span></div>
+                  <div className="itinerary-event-actions"><button onClick={() => onOpenEvent(event)}>View event details ↗</button>{event.url_sumber && <a href={event.url_sumber} target="_blank" rel="noreferrer">Official source ↗</a>}</div>
+                </>}
+                {!isFestival && <span className="itinerary-illustrative-label">Flexible suggestion · choose and verify a venue</span>}
               </div>
-              {editMode ? (
-                <div className="activity-edit-actions" aria-label={`Edit ${event.nama_event}`}>
-                  <button type="button" onClick={() => onMoveEvent(event.no, "up")} disabled={index === 0} aria-label={`Move ${event.nama_event} earlier`} title="Move earlier">↑</button>
-                  <button type="button" onClick={() => onMoveEvent(event.no, "down")} disabled={index === selectedDayEvents.length - 1} aria-label={`Move ${event.nama_event} later`} title="Move later">↓</button>
-                  <button type="button" className="itinerary-remove-button" onClick={() => onRemoveEvent(event.no)} aria-label={`Remove ${event.nama_event} from itinerary`} title="Remove from itinerary">×</button>
-                </div>
-              ) : <button className="activity-more" onClick={() => onOpenEvent(event)} aria-label={`View ${event.nama_event}`} title="View event details">↗</button>}
+              {editMode ? <div className="activity-edit-actions" aria-label={`Edit ${activity.title}`}>
+                <button type="button" onClick={() => onMoveActivity(activity.id, "up")} disabled={index === 0} aria-label="Move activity earlier" title="Move earlier">↑</button>
+                <button type="button" onClick={() => onMoveActivity(activity.id, "down")} disabled={index === selectedDayActivities.length - 1} aria-label="Move activity later" title="Move later">↓</button>
+                <button type="button" className="itinerary-remove-button" onClick={() => onRemoveActivity(activity.id)} aria-label="Remove activity" title="Remove from itinerary">×</button>
+              </div> : <span className="activity-more" aria-hidden="true">···</span>}
             </article>
           );
-        }) : (
-          <div className="itinerary-day-empty">
-            <span>✦</span>
-            <h3>{plan.matches.length ? "No festival scheduled for this day" : "No matching festival listings yet"}</h3>
-            <p>This is a flexible day with no matching festival listing in the current dataset. You can keep it open, explore other events, or adjust your trip preferences.</p>
-            <div className="itinerary-empty-actions">
-              <button className="button button-secondary" onClick={onExplore}>Explore festivals</button>
-              <button className="button button-secondary" onClick={onPlanner}>Change dates</button>
-            </div>
-          </div>
-        )}
+        }) : <div className="itinerary-day-empty"><span>✦</span><h3>This day is open for your own discoveries</h3><p>No scheduled activity remains for this day. Turn on Edit itinerary to add your own activity, or keep this time free.</p></div>}
+        {editMode && !isSample && <>
+          {!showAddForm ? <button className="button button-secondary itinerary-add-button" onClick={() => setShowAddForm(true)}>＋ Add your own activity</button> : <form className="itinerary-add-form" onSubmit={handleAddActivity}>
+            <strong>Add an activity to Day {safeActiveDay + 1}</strong>
+            <input aria-label="Activity name" placeholder="e.g. Visit a local art market" value={customTitle} onChange={(event) => setCustomTitle(event.target.value)} required maxLength={90}/>
+            <label>Time <input type="time" value={customTime} onChange={(event) => setCustomTime(event.target.value)} required/></label>
+            <div><button className="button button-primary" type="submit">Add activity</button><button className="button button-secondary" type="button" onClick={() => setShowAddForm(false)}>Cancel</button></div>
+          </form>}
+        </>}
       </div>
-      </>}
-      <div className="sample-disclaimer"><span>ⓘ</span><p>{isSample ? "This is an illustrative sample, not a confirmed travel plan. Places, activities, and times are examples only." : "Matches use event dates and locations from the current working dataset. Dates, ticket prices, venues, and programmes may change. Transport, accommodation, and meal costs are not calculated; confirm all details with official sources before travelling."}</p></div>
+      <div className="sample-disclaimer"><span>ⓘ</span><p>{isSample ? "This is an illustrative sample, not a confirmed travel plan. Places, activities, and times are examples only." : "Festival listings are matched from the working dataset. Other schedule entries are flexible activity ideas, not verified venues or bookings. Festival programme times, opening hours, transport, and total trip costs must be checked before travelling."}</p></div>
       <Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
     </main>
   );
@@ -708,7 +711,7 @@ export default function HomePage() {
       if (stored) {
         const parsed = JSON.parse(stored) as ItineraryPlan;
         if (parsed?.preferences && Array.isArray(parsed.matches) && Array.isArray(parsed.dayDates) && parsed.visitDates) {
-          setItineraryPlan(parsed);
+          setItineraryPlan(ensurePlanActivities(parsed));
           setItinerarySaved(true);
         }
       }
@@ -759,33 +762,58 @@ export default function HomePage() {
     }
   };
 
-  const handleRemoveItineraryEvent = (eventNo: number) => {
-    setItineraryPlan((current) => current ? {
-      ...current,
-      matches: current.matches.filter((event) => event.no !== eventNo),
-      visitDates: Object.fromEntries(Object.entries(current.visitDates).filter(([key]) => Number(key) !== eventNo)),
-      removedEventNos: [...(current.removedEventNos ?? []), eventNo],
-    } : current);
+  const handleRemoveItineraryActivity = (activityId: string) => {
+    setItineraryPlan((current) => {
+      if (!current) return current;
+      const removed = current.activities?.find((activity) => activity.id === activityId);
+      const nextActivities = (current.activities ?? []).filter((activity) => activity.id !== activityId);
+      if (removed?.eventNo) {
+        return {
+          ...current,
+          activities: nextActivities,
+          matches: current.matches.filter((event) => event.no !== removed.eventNo),
+          visitDates: Object.fromEntries(Object.entries(current.visitDates).filter(([key]) => Number(key) !== removed.eventNo)),
+          removedEventNos: [...(current.removedEventNos ?? []), removed.eventNo],
+        };
+      }
+      return { ...current, activities: nextActivities };
+    });
     setItinerarySaved(false);
     try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
   };
 
-  const handleMoveItineraryEvent = (eventNo: number, direction: "up" | "down") => {
+  const handleMoveItineraryActivity = (activityId: string, direction: "up" | "down") => {
     setItineraryPlan((current) => {
-      if (!current) return current;
-      const eventDate = current.visitDates[String(eventNo)];
-      if (!eventDate) return current;
-      const dayEvents = current.matches.filter((event) => current.visitDates[String(event.no)] === eventDate);
-      const dayIndex = dayEvents.findIndex((event) => event.no === eventNo);
-      const targetIndex = direction === "up" ? dayIndex - 1 : dayIndex + 1;
-      if (dayIndex < 0 || targetIndex < 0 || targetIndex >= dayEvents.length) return current;
-      const firstPosition = current.matches.findIndex((event) => event.no === dayEvents[dayIndex].no);
-      const secondPosition = current.matches.findIndex((event) => event.no === dayEvents[targetIndex].no);
-      if (firstPosition < 0 || secondPosition < 0) return current;
-      const nextMatches = [...current.matches];
-      [nextMatches[firstPosition], nextMatches[secondPosition]] = [nextMatches[secondPosition], nextMatches[firstPosition]];
-      return { ...current, matches: nextMatches };
+      if (!current?.activities) return current;
+      const activity = current.activities.find((item) => item.id === activityId);
+      if (!activity) return current;
+      const dayActivities = current.activities.filter((item) => item.date === activity.date);
+      const index = dayActivities.findIndex((item) => item.id === activityId);
+      const target = direction === "up" ? index - 1 : index + 1;
+      if (target < 0 || target >= dayActivities.length) return current;
+      const first = current.activities.findIndex((item) => item.id === dayActivities[index].id);
+      const second = current.activities.findIndex((item) => item.id === dayActivities[target].id);
+      const next = [...current.activities];
+      [next[first], next[second]] = [next[second], next[first]];
+      return { ...current, activities: next };
     });
+    setItinerarySaved(false);
+    try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
+  };
+
+  const handleAddItineraryActivity = (activity: { date: string; time: string; title: string }) => {
+    setItineraryPlan((current) => current ? {
+      ...current,
+      activities: [...(current.activities ?? []), {
+        id: `custom-${Date.now()}`,
+        date: activity.date,
+        time: activity.time,
+        title: activity.title,
+        description: "Added by you. Confirm the venue, opening hours, and travel details before your visit.",
+        kind: "Your activity",
+        source: "custom",
+      }],
+    } : current);
     setItinerarySaved(false);
     try { window.localStorage.removeItem(ITINERARY_STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
   };
@@ -809,7 +837,7 @@ export default function HomePage() {
     {view === "explore" && <ExplorePage key={queryForExplore} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} initialQuery={queryForExplore} />}
     {view === "event" && selectedEvent && <DetailPage event={selectedEvent} onBack={() => navigate("explore")} onComingSoon={showComingSoon} favorite={savedIds.has(selectedEvent.no)} onFavorite={() => toggleFavorite(selectedEvent)} />}
     {view === "planner" && <PlannerPage initialPreferences={itineraryPlan?.preferences} onCreatePlan={handleCreateTripPlan} onShowItinerary={handleShowSamplePlan} />}
-    {view === "itinerary" && savedPlanLoaded && <ItineraryPage plan={itineraryPlan} isSaved={itinerarySaved} onSave={handleSaveItinerary} onRemoveEvent={handleRemoveItineraryEvent} onMoveEvent={handleMoveItineraryEvent} onPlanner={() => navigate("planner")} onShowSample={handleShowSamplePlan} onExplore={() => navigate("explore")} onOpenEvent={openEvent} />}
+    {view === "itinerary" && savedPlanLoaded && <ItineraryPage plan={itineraryPlan} isSaved={itinerarySaved} onSave={handleSaveItinerary} onRemoveActivity={handleRemoveItineraryActivity} onMoveActivity={handleMoveItineraryActivity} onAddActivity={handleAddItineraryActivity} onPlanner={() => navigate("planner")} onShowSample={handleShowSamplePlan} onExplore={() => navigate("explore")} onOpenEvent={openEvent} />}
     {view === "destinations" && <DestinationsPage onComingSoon={showComingSoon} />}
     {comingSoonFeature && <ComingSoonModal feature={comingSoonFeature} onClose={() => setComingSoonFeature(null)} />}
   </>;
