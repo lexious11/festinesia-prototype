@@ -354,6 +354,7 @@ function ExplorePage({
   const [category, setCategory] = useState<Category>("All");
   const [budget, setBudget] = useState("all");
   const [visible, setVisible] = useState(12);
+  const [sortBy, setSortBy] = useState<"date" | "name" | "saved">("date");
   const categories: Category[] = ["All", "Festivals", "Performances", "Museums", "Culinary", "Traditions", "Village tourism"];
   const results = useMemo(() => festivals.filter((event) => {
     const haystack = [event.nama_event, event.provinsi, event.kabupaten_kota, event.akses_transportasi].filter(Boolean).join(" ").toLowerCase();
@@ -364,17 +365,21 @@ function ExplorePage({
     const timeMatch = timing === "all" || status === timing;
     const budgetMatch = budget === "all" || (budget === "free" ? (min === 0 || /gratis|free/i.test(event.harga_status || "")) : budget === "under500" ? (typeof min === "number" && min > 0 && min < 500000) : budget === "under1m" ? (typeof min === "number" && min <= 1000000) : true);
     return queryMatch && provinceMatch && timeMatch && categoryMatch(event, category) && budgetMatch;
-  }).sort((a, b) => {
-    const rank = (e: FestivalRecord) => eventStatus(e) === "upcoming" ? 0 : eventStatus(e) === "ongoing" ? 1 : eventStatus(e) === "unknown" ? 2 : 3;
-    return rank(a) - rank(b) || a.nama_event.localeCompare(b.nama_event, "en");
-  }), [query, province, timing, category, budget]);
+  }).filter((event) => sortBy !== "saved" || favorites.has(event.no))
+    .sort((a, b) => {
+      if (sortBy === "name") return a.nama_event.localeCompare(b.nama_event, "en");
+      if (sortBy === "saved") return a.nama_event.localeCompare(b.nama_event, "en");
+      const aDate = a.tanggal_mulai ? new Date(`${a.tanggal_mulai}T00:00:00`).getTime() : Number.MAX_SAFE_INTEGER;
+      const bDate = b.tanggal_mulai ? new Date(`${b.tanggal_mulai}T00:00:00`).getTime() : Number.MAX_SAFE_INTEGER;
+      return aDate - bDate || a.nama_event.localeCompare(b.nama_event, "en");
+    }), [query, province, timing, category, budget, sortBy, favorites]);
   const clear = () => { setQuery(""); setProvince("all"); setTiming("all"); setCategory("All"); setBudget("all"); setVisible(12); };
   return <main className="content-page explore-page"><div className="page-intro"><div className="section-kicker">FIND YOUR NEXT CULTURAL EXPERIENCE</div><h1>Explore festivals & culture</h1><p>Discover events across Indonesia, from regional celebrations to living traditions.</p></div>
     <div className="explore-search-row"><span>⌕</span><input value={query} onChange={(e) => { setQuery(e.target.value); setVisible(12); }} placeholder="Search a festival, destination, or city..." aria-label="Search event listings" /><kbd>/</kbd><span className="search-results-total">{results.length} listings</span></div>
     <div className="category-scroll">{categories.map((item) => <button key={item} onClick={() => { setCategory(item); setVisible(12); }} className={`category-chip ${category === item ? "category-active" : ""}`}>{item}</button>)}</div>
     <div className="explore-layout"><aside className="filters-sidebar"><div className="filters-heading"><strong>Filters</strong><button onClick={clear}>Reset</button></div><label className="filter-group"><span>Location</span><select value={province} onChange={(e) => setProvince(e.target.value)} aria-label="Choose a destination"><option value="all">All provinces</option>{provinces.map((p) => <option key={p} value={p}>{displayProvinceName(p)}</option>)}</select></label><label className="filter-group"><span>When</span><select value={timing} onChange={(e) => setTiming(e.target.value as Timing)}><option value="all">Any time</option><option value="upcoming">Upcoming</option><option value="ongoing">Happening now</option></select></label><div className="filter-group"><span>Budget guidance</span><label className="radio-line"><input type="radio" name="budget" checked={budget === "all"} onChange={() => setBudget("all")} /> Any budget</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "free"} onChange={() => setBudget("free")} /> Free entry listed</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under500"} onChange={() => setBudget("under500")} /> Under Rp500,000</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under1m"} onChange={() => setBudget("under1m")} /> Up to Rp1,000,000</label></div><div className="filter-help"><span>ⓘ</span><p>Event dates, ticket details, and visitor information can change. Confirm current details with the organiser or official source before travelling.</p></div></aside>
-      <section className="results-main"><div className="results-heading"><div><h2>{category === "All" ? "Cultural events" : category}</h2><p>Showing {Math.min(visible, results.length)} of {results.length} listings</p></div><label className="sort-select">Sort by <select defaultValue="relevant"><option value="relevant">Recommended</option><option value="name">Name A–Z</option></select></label></div>
-      {results.length ? <div className="event-grid-explore">{results.slice(0, visible).map((event) => <EventCard key={event.no} event={event} onOpen={onOpenEvent} isFavorite={favorites.has(event.no)} onToggleFavorite={onToggleFavorite} />)}</div> : <div className="empty-results"><span>⌕</span><h3>No matches found</h3><p>Try removing a filter or searching for another location.</p><button className="button button-primary" onClick={clear}>Clear all filters</button></div>}
+      <section className="results-main"><div className="results-heading"><div><h2>{category === "All" ? "Cultural events" : category}</h2><p>Showing {Math.min(visible, results.length)} of {results.length} listings</p></div><label className="sort-select">Sort by <select value={sortBy} onChange={(e) => { setSortBy(e.target.value as "date" | "name" | "saved"); setVisible(12); }}><option value="date">Nearest date</option><option value="name">Name A–Z</option><option value="saved">Saved events</option></select></label></div>
+      {results.length ? <div className="event-grid-explore">{results.slice(0, visible).map((event) => <EventCard key={event.no} event={event} onOpen={onOpenEvent} isFavorite={favorites.has(event.no)} onToggleFavorite={onToggleFavorite} />)}</div> : <div className="empty-results"><span>⌕</span><h3>{sortBy === "saved" ? "No saved events yet" : "No matches found"}</h3><p>{sortBy === "saved" ? "Save a festival using the heart icon on an event card to see it here." : "Try removing a filter or searching for another location."}</p>{sortBy === "saved" ? <button className="button button-primary" onClick={() => setSortBy("date")}>Browse all events</button> : <button className="button button-primary" onClick={clear}>Clear all filters</button>}</div>}
       {visible < results.length && <button className="button button-secondary show-more" onClick={() => setVisible((v) => v + 12)}>Load more events ↓</button>}
       <div className="dataset-disclaimer"><span>ⓘ</span><p><strong>A note on event data.</strong> The active catalogue focuses on ongoing and upcoming festival listings. Some dates, ticket prices, venue details, and visitor facilities still require confirmation; check official organiser sources before travelling.</p></div>
       </section></div><Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
@@ -732,6 +737,7 @@ export default function HomePage() {
   const [view, setView] = useState<View>("home");
   const [selectedEvent, setSelectedEvent] = useState<FestivalRecord | null>(null);
   const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+  const [savedEventsLoaded, setSavedEventsLoaded] = useState(false);
   const [queryForExplore, setQueryForExplore] = useState("");
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -740,6 +746,29 @@ export default function HomePage() {
   const [savedPlanLoaded, setSavedPlanLoaded] = useState(false);
   const historyInitialized = useRef(false);
   const skipNextHistoryPush = useRef(false);
+
+  // Keep saved festival selections on this browser and device between visits.
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("festinesia:saved-events");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) setSavedIds(new Set(parsed.filter((value): value is number => Number.isInteger(value))));
+      }
+    } catch {
+      // Ignore invalid or unavailable browser storage.
+    }
+    setSavedEventsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!savedEventsLoaded) return;
+    try {
+      window.localStorage.setItem("festinesia:saved-events", JSON.stringify([...savedIds]));
+    } catch {
+      // Saved events remain available for the current session if storage is unavailable.
+    }
+  }, [savedIds, savedEventsLoaded]);
 
   // Keep in-app view changes in browser history so the phone/browser Back button
   // returns to the previous FestiNesia screen instead of leaving the site immediately.
@@ -927,7 +956,7 @@ export default function HomePage() {
   }, []);
 
   return <>
-    <header className="site-header-v3"><div className="header-inner"><Brand onClick={() => navigate("home")} /><button className={`mobile-menu-button ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Toggle menu">{mobileMenuOpen ? "×" : "☰"}</button><nav className={`main-nav ${mobileMenuOpen ? "mobile-nav-open" : ""}`} aria-label="Main navigation">{([{ key: "home", label: "Home" }, { key: "explore", label: "Explore" }, { key: "planner", label: "Trip Planner" }, { key: "itinerary", label: "Itinerary" }, { key: "destinations", label: "Destinations" }] as { key: View; label: string }[]).map((item) => <button key={item.label} className={(view === item.key || (item.key === "explore" && view === "event")) ? "nav-active-v3" : ""} onClick={() => navigate(item.key)}>{item.label}</button>)}</nav><button className="header-search-icon" onClick={() => navigate("explore")} aria-label="Search festivals">⌕</button><button className="header-avatar" onClick={() => showComingSoon("Traveller profile and saved collections")} aria-label="Traveller profile">✦</button><button className="header-cta-v3" onClick={() => navigate("explore")}>Explore festivals <span>↗</span></button></div></header>
+    <header className="site-header-v3"><div className="header-inner"><Brand onClick={() => navigate("home")} /><button className={`mobile-menu-button ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Toggle menu">{mobileMenuOpen ? "×" : "☰"}</button><nav className={`main-nav ${mobileMenuOpen ? "mobile-nav-open" : ""}`} aria-label="Main navigation">{([{ key: "home", label: "Home" }, { key: "explore", label: "Explore" }, { key: "planner", label: "Trip Planner" }, { key: "itinerary", label: "Itinerary" }, { key: "destinations", label: "Destinations" }] as { key: View; label: string }[]).map((item) => <button key={item.label} className={(view === item.key || (item.key === "explore" && view === "event")) ? "nav-active-v3" : ""} onClick={() => navigate(item.key)}>{item.label}</button>)}</nav></div></header>
     {view === "home" && <HomeLanding onNavigate={navigate} onExploreSearch={exploreSearch} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} onComingSoon={showComingSoon} />}
     {view === "explore" && <ExplorePage key={queryForExplore} onOpenEvent={openEvent} favorites={savedIds} onToggleFavorite={toggleFavorite} initialQuery={queryForExplore} />}
     {view === "event" && selectedEvent && <DetailPage event={selectedEvent} onBack={() => navigate("explore")} onComingSoon={showComingSoon} favorite={savedIds.has(selectedEvent.no)} onFavorite={() => toggleFavorite(selectedEvent)} />}

@@ -5,11 +5,19 @@ An English-language Next.js prototype for discovering upcoming Indonesian cultur
 ## Main sections
 
 - **Home** — cultural travel introduction, festival search, current catalogue statistics, featured events, and destination previews.
-- **Explore** — search and filter active festival listings by province, date status, category, and ticket-price guidance.
+- **Explore** — search and filter active festival listings by province, date status, category, and ticket-price guidance. By default, events are sorted by the nearest start date; users can also sort alphabetically or show only saved events.
 - **Festival details** — a shared event-detail template with an event overview, Attraction, Amenities, Accessibility, travel tips, review placeholder, source links, and an image-gallery preview. Content changes according to the selected festival record.
 - **Trip Planner** — users select a destination, travel dates (up to 7 days), budget preference, interests, and traveller count. The app matches festival listings by destination and date, then ranks matches using selected interests.
 - **Itinerary** — automatically creates a day-by-day outline. Dataset-backed festivals are placed on matching dates; flexible activity ideas fill open parts of the day. Users can add, remove, and reorder activities, then save the plan in the current browser.
 - **Destinations** — destination preview cards and roadmap placeholders for detailed destination guides, maps, and nearby facilities.
+
+## Explore sorting and saved festivals
+
+- The default Explore sort is **Nearest date**, using each event's `tanggal_mulai` value (earliest start date first). Events without a valid start date appear after dated events.
+- **Name A–Z** sorts the filtered results alphabetically.
+- **Saved events** filters the current Explore results to festivals the user has saved with the heart button. If no events have been saved, an explanatory empty state is shown.
+- Saved festival IDs are stored in browser local storage under `festinesia:saved-events`. They persist on the same browser and device, but are not synced between devices or user accounts. Clearing browser site data will remove them.
+- The header's search shortcut, traveller-profile sparkle button, and duplicate “Explore festivals” call-to-action have been removed. Search remains available on the Explore page.
 
 ## Run locally
 
@@ -30,7 +38,7 @@ npm run build
 
 ## Current functionality and limitations
 
-- Event search, category filters, province filters, upcoming/ongoing status filters, price guidance, event-detail tabs, and saved-event hearts are implemented with local data/state.
+- Event search, category filters, province filters, upcoming/ongoing status filters, price guidance, event-detail tabs, and saved-event hearts are implemented. Saved festival selections persist in the same browser and on the same device using local storage.
 - Event detail pages use the same layout, but the Overview and 3A content is read from each event's own dataset fields. Unknown or unverified details are described as such rather than filled with assumptions.
 - The Trip Planner matches festival records by destination and date, then ranks results by selected interests. The budget is currently stored as a planning preference; it does not calculate total transport, accommodation, or meal costs.
 - The itinerary generator places matching festival listings on dates that overlap the trip. It adds clearly labelled flexible ideas for open parts of each day; these are not confirmed venues, reservations, or route recommendations. No unsupported venue name or visit time is invented.
