@@ -385,3 +385,125 @@ body{font-size:15px}
 .itinerary-add-form>div{grid-column:1/-1;display:flex;gap:8px}
 .itinerary-event-activity .activity-copy{min-width:0}
 @media(max-width:560px){.itinerary-add-form{grid-template-columns:1fr}.itinerary-add-form>strong,.itinerary-add-form>div{grid-column:1}}
+
+
+/* Desktop readability upgrade — applies only to wide desktop screens.
+   Existing tablet and mobile typography rules remain unchanged. */
+@media (min-width: 1101px) {
+  body { font-size: 17px; }
+
+  /* Navigation, controls, and shared labels */
+  .main-nav button { font-size: 15px; }
+  .header-cta-v3, .button { font-size: 15px; }
+  .eyebrow, .section-kicker { font-size: 11px; }
+  .text-arrow { font-size: 14px; }
+  .muted-badge { font-size: 12px; }
+
+  /* Home page */
+  .home-hero-content > p { font-size: 18px; }
+  .hero-search-field input, .hero-search-field select { font-size: 16px; }
+  .hero-search-submit { font-size: 15px; }
+  .hero-trust-line { font-size: 13px; }
+  .hero-caption { font-size: 12px; }
+  .stat-cell small { font-size: 13px; }
+  .stats-note { font-size: 12px; }
+  .home-feature strong { font-size: 16px; }
+  .home-feature small { font-size: 14px; }
+  .section-head h2 { font-size: 38px; }
+  .section-head p { font-size: 17px; }
+
+  /* Explore and event cards */
+  .page-intro h1 { font-size: 44px; }
+  .page-intro p { font-size: 17px; }
+  .explore-search-row input { font-size: 16px; }
+  .search-results-total { font-size: 14px; }
+  .category-chip { font-size: 14px; }
+  .event-card-date { font-size: 14px; }
+  .event-card-title { font-size: 18px; min-height: 48px; }
+  .event-card-location { font-size: 15px; min-height: 40px; }
+  .event-price { font-size: 14px; }
+  .status-pill { font-size: 12px; }
+  .image-disclaimer { font-size: 11px; }
+  .filters-heading strong { font-size: 18px; }
+  .filters-heading button { font-size: 14px; }
+  .filter-group > span { font-size: 16px; }
+  .filter-group select, .full-field select, .full-field input { font-size: 16px; }
+  .radio-line { font-size: 14px; }
+  .filter-help p { font-size: 13px; }
+  .results-heading h2 { font-size: 24px; }
+  .results-heading p, .sort-select, .sort-select select { font-size: 14px; }
+  .dataset-disclaimer p, .sample-disclaimer p { font-size: 14px; line-height: 1.7; }
+
+  /* Event detail: overview, gallery tabs, and tourism 3A */
+  .back-link { font-size: 15px; }
+  .detail-title-copy h1 { font-size: 48px; }
+  .detail-location { font-size: 17px; }
+  .detail-title-meta { font-size: 14px; }
+  .detail-tabs button { font-size: 15px; padding-inline: 19px; }
+  .soon-mini { font-size: 9px; }
+  .event-about-layout h2, .three-a-section h2, .info-tab-panel h2 { font-size: 34px; }
+  .event-about-layout p { font-size: 16px; line-height: 1.8; }
+  .fact-card small { font-size: 13px; }
+  .fact-card strong { font-size: 15px; }
+  .three-a-card-v3 h3 { font-size: 17px; }
+  .three-a-card-v3 p { font-size: 14px; line-height: 1.75; }
+  .source-copy strong { font-size: 15px; }
+  .source-copy p { font-size: 14px; line-height: 1.75; }
+  .source-copy small, .source-links a, .source-links span { font-size: 13px; }
+  .info-tab-panel p { font-size: 16px; line-height: 1.8; }
+
+  /* Trip Planner */
+  .planner-banner strong { font-size: 17px; }
+  .planner-banner p { font-size: 15px; line-height: 1.7; }
+  .coming-badge { font-size: 12px; }
+  .form-card-head h2 { font-size: 21px; }
+  .form-card-head p { font-size: 15px; }
+  .full-field > span, .travelers-field > span { font-size: 15px; }
+  .interest-chips button, .suggestions button { font-size: 14px; }
+  .form-note { font-size: 12px; }
+  .guide-header h2 { font-size: 18px; }
+  .guide-header p { font-size: 13px; }
+  .guide-intro-card strong { font-size: 16px; }
+  .guide-intro-card p { font-size: 15px; }
+  .guide-section-label { font-size: 12px; }
+  .guide-steps strong, .guide-3a-card strong { font-size: 15px; }
+  .guide-steps p, .guide-3a-card p { font-size: 14px; }
+  .guide-data-note { font-size: 12px; }
+  .sample-itinerary-link { font-size: 15px; }
+
+  /* Itinerary */
+  .itinerary-head h1 { font-size: 48px; }
+  .itinerary-head p { font-size: 17px; }
+  .itinerary-head-actions .button { font-size: 15px; }
+  .itinerary-summary { font-size: 15px; }
+  .day-tabs button strong { font-size: 16px; }
+  .day-tabs button small { font-size: 14px; }
+  .activity-kind { font-size: 12px; }
+  .activity-copy h3 { font-size: 19px; }
+  .activity-copy p { font-size: 16px; line-height: 1.7; }
+  .itinerary-event-meta { font-size: 14px; }
+  .itinerary-event-actions button, .itinerary-event-actions a { font-size: 14px; }
+  .itinerary-illustrative-label { font-size: 12px; }
+  .itinerary-empty-state h1 { font-size: 48px; }
+  .itinerary-empty-state > p { font-size: 17px; }
+  .itinerary-save-message, .itinerary-edit-note { font-size: 14px; }
+  .itinerary-day-empty h3 { font-size: 22px; }
+  .itinerary-day-empty p { font-size: 15px; }
+  .itinerary-no-matches h2 { font-size: 34px; }
+  .itinerary-no-matches p { font-size: 16px; }
+  .match-reason-row > span:first-child { font-size: 12px; }
+  .match-reason-chip { font-size: 12px; }
+  .itinerary-add-form > strong { font-size: 16px; }
+  .itinerary-add-form > input, .itinerary-add-form label input { font-size: 15px; }
+
+  /* Destinations and footer */
+  .destination-feature-copy h2 { font-size: 50px; }
+  .destination-feature-copy p { font-size: 17px; }
+  .destination-card-body h3 { font-size: 20px; }
+  .destination-card-body > small { font-size: 14px; }
+  .destination-card-body p { font-size: 15px; }
+  .destination-bottom span, .destination-bottom button { font-size: 13px; }
+  .footer-brand-block p { font-size: 14px; }
+  .footer-nav button { font-size: 14px; }
+  .footer-bottom-v3 { font-size: 12px; }
+}

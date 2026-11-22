@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   eventStatus,
   festivals,
-  demoFestivalCount,
   formatDateRange,
   priceLabel,
   type FestivalRecord,
@@ -57,8 +56,52 @@ const provinces = Array.from(
   new Set(festivals.map((event) => event.provinsi?.trim()).filter((v): v is string => Boolean(v))),
 ).sort((a, b) => a.localeCompare(b, "en"));
 
+const provinceDisplayNames: Record<string, string> = {
+  "Kalimantan Barat": "West Kalimantan",
+  "Kalimantan Timur": "East Kalimantan",
+  "Kalimantan Selatan": "South Kalimantan",
+  "Kalimantan Tengah": "Central Kalimantan",
+  "Kalimantan Utara": "North Kalimantan",
+  "Sulawesi Tengah": "Central Sulawesi",
+  "Sulawesi Selatan": "South Sulawesi",
+  "Sulawesi Utara": "North Sulawesi",
+  "Sulawesi Tenggara": "Southeast Sulawesi",
+  "Sulawesi Barat": "West Sulawesi",
+  "Sumatera Utara": "North Sumatra",
+  "Sumatera Barat": "West Sumatra",
+  "Sumatera Selatan": "South Sumatra",
+  "Jawa Barat": "West Java",
+  "Jawa Tengah": "Central Java",
+  "Jawa Timur": "East Java",
+  "Nusa Tenggara Barat": "West Nusa Tenggara",
+  "Nusa Tenggara Timur": "East Nusa Tenggara",
+  "Papua Pegunungan": "Highland Papua",
+  "Papua Barat": "West Papua",
+  "Papua Selatan": "South Papua",
+  "Papua Tengah": "Central Papua",
+  "DI Yogyakarta": "Special Region of Yogyakarta",
+};
+
+function displayProvinceName(value: string) {
+  return provinceDisplayNames[value] ?? value;
+}
+
+function displayAdministrativeArea(value: string | null | undefined) {
+  if (!value) return "";
+  return value
+    .replace(/^Kabupaten\s+/i, "")
+    .replace(/^Kab\.\s*/i, "")
+    .replace(/^Kota Administrasi\s+/i, "")
+    .replace(/^Kota Adm\.\s*/i, "")
+    .replace(/^Kota\s+/i, "")
+    .replace(/^Kabupaten$/, "");
+}
+
 function locationLabel(event: FestivalRecord) {
-  return [event.kabupaten_kota, event.provinsi].filter(Boolean).join(", ") || "Indonesia";
+  const area = displayAdministrativeArea(event.kabupaten_kota);
+  const province = event.provinsi ? displayProvinceName(event.provinsi) : "";
+  const areaLabel = area ? (/^(Kota|Kabupaten|Kab\.)/i.test(event.kabupaten_kota ?? "") ? `${area} ${/^(Kota)/i.test(event.kabupaten_kota ?? "") ? "City" : "Regency"}` : area) : "";
+  return [areaLabel, province].filter(Boolean).join(", ") || "Indonesia";
 }
 
 function formatCount(value: number) {
@@ -98,7 +141,6 @@ function Brand({ onClick }: { onClick: () => void }) {
 
 function StatusPill({ event }: { event: FestivalRecord }) {
   const status = eventStatus(event);
-  if (event.data_status === "demo") return <span className="status-pill status-demo">Demo listing</span>;
   const label = status === "upcoming" ? "Upcoming" : status === "ongoing" ? "Happening now" : status === "past" ? "Past event" : "Date to confirm";
   return <span className={`status-pill status-${status}`}>{label}</span>;
 }
@@ -188,7 +230,7 @@ function DetailPage({
     <main className="content-page detail-page">
       <button className="back-link" onClick={onBack}>← Back to explore</button>
       <div className="detail-title-row">
-        <div className="detail-title-copy"><div className="eyebrow">{event.data_status === "demo" ? "FICTIONAL DEMO EVENT · NOT A REAL ANNOUNCEMENT" : "CULTURAL EVENT GUIDE"}</div><h1>{event.nama_event}</h1><div className="detail-location"><span>⌖</span> {locationLabel(event)}</div><div className="detail-title-meta"><span>▦ {formatDateRange(event)}</span><span className="meta-dot">•</span><StatusPill event={event} /></div></div>
+        <div className="detail-title-copy"><div className="eyebrow">CULTURAL EVENT GUIDE</div><h1>{event.nama_event}</h1><div className="detail-location"><span>⌖</span> {locationLabel(event)}</div><div className="detail-title-meta"><span>▦ {formatDateRange(event)}</span><span className="meta-dot">•</span><StatusPill event={event} /></div></div>
         <div className="detail-actions"><button className={`button button-secondary save-detail ${favorite ? "is-favorite" : ""}`} onClick={onFavorite}>{favorite ? "♥ Saved" : "♡ Save event"}</button><button className="button button-primary" onClick={() => onComingSoon("Personalised trip planning for this event")}>Plan a trip <span>↗</span></button></div>
       </div>
       <DetailGallery event={event} onGalleryClick={() => onComingSoon("Full event photo gallery")} />
@@ -198,7 +240,7 @@ function DetailPage({
       </div>
       {tab === "Overview" && <>
         <section className="event-about-layout"><div><div className="section-kicker">GET TO KNOW THE EVENT</div><h2>About {event.nama_event}</h2><p>{event.deskripsi_festinesia?.trim() || "A dedicated description for this event has not been verified yet. Explore the public source links below for the latest programme, dates, and visitor information."}</p><p className="soft-paragraph">FestiNesia is building practical event guides that bring together cultural highlights and visitor information. Details will be expanded as reliable sources are reviewed.</p></div>
-          <div className="event-facts"><div className="fact-card"><span className="fact-icon peach">✺</span><small>Event type</small><strong>Culture & festival</strong></div><div className="fact-card"><span className="fact-icon blue">⌖</span><small>Location</small><strong>{event.kabupaten_kota || event.provinsi || "Indonesia"}</strong></div><div className="fact-card"><span className="fact-icon mint">▦</span><small>Event dates</small><strong>{formatDateRange(event)}</strong></div><div className="fact-card"><span className="fact-icon coral">Rp</span><small>Ticket information</small><strong>{priceLabel(event)}</strong></div></div></section>
+          <div className="event-facts"><div className="fact-card"><span className="fact-icon peach">✺</span><small>Event type</small><strong>Culture & festival</strong></div><div className="fact-card"><span className="fact-icon blue">⌖</span><small>Location</small><strong>{locationLabel(event)}</strong></div><div className="fact-card"><span className="fact-icon mint">▦</span><small>Event dates</small><strong>{formatDateRange(event)}</strong></div><div className="fact-card"><span className="fact-icon coral">Rp</span><small>Ticket information</small><strong>{priceLabel(event)}</strong></div></div></section>
         <ThreeASection event={event} />
         <SourcePanel event={event} />
       </>}
@@ -221,15 +263,15 @@ function ThreeASection({ event }: { event: FestivalRecord }) {
 }
 
 function SourcePanel({ event }: { event: FestivalRecord }) {
-  if (event.data_status === "demo") {
-    return <section className="source-panel demo-source-panel"><div className="source-symbol">ⓘ</div><div className="source-copy"><strong>Fictional demo data — not for travel planning</strong><p>{event.demo_disclaimer || "This is a fictional record created only to test FestiNesia. It is not a real or announced event."}</p><small>Replace this demo record with verified organiser or official tourism information before public travel use.</small></div></section>;
-  }
-  const links = [
-    event.url_sumber ? { label: "Open KEN catalogue", url: event.url_sumber } : null,
-    event.harga_sumber ? { label: "Open event information", url: event.harga_sumber } : null,
+  const rawLinks = [
+    event.url_sumber ? { label: "Open event information", url: event.url_sumber } : null,
+    event.harga_sumber ? { label: "Ticket information", url: event.harga_sumber } : null,
     event.instagram ? { label: "Instagram profile", url: `https://www.instagram.com/${event.instagram.replace(/^@/, "")}/` } : null,
   ].filter((item): item is { label: string; url: string } => Boolean(item && /^https?:\/\//.test(item.url)));
-  return <section className="source-panel"><div className="source-symbol">ⓘ</div><div className="source-copy"><strong>Before you go</strong><p>Dates and event details come from the working KEN 2026 dataset and may change. Confirm current details with the organiser or official source before travelling.</p><small>Dataset source: {event.sumber || "Source not specified"}{event.harga_dicek ? ` · Price checked ${event.harga_dicek}` : ""}</small></div><div className="source-links">{links.length ? links.map((link) => <a key={link.url} href={link.url} target="_blank" rel="noreferrer">{link.label} ↗</a>) : <span>Direct source link unavailable</span>}</div></section>;
+  // Some records use the same official page for event and ticket information.
+  // Render each URL once to avoid duplicate React keys and duplicate links.
+  const links = Array.from(new Map(rawLinks.map((item) => [item.url, item])).values());
+  return <section className="source-panel"><div className="source-symbol">ⓘ</div><div className="source-copy"><strong>Before you go</strong><p>Event dates and details may change. Confirm current information with the organiser or official source before travelling.</p><small>{event.last_verified_event_info ? `Information last checked ${event.last_verified_event_info}.` : "Information verification date not recorded."}</small></div><div className="source-links">{links.length ? links.map((link) => <a key={link.url} href={link.url} target="_blank" rel="noreferrer">{link.label} ↗</a>) : <span>Direct source link unavailable</span>}</div></section>;
 }
 
 function InfoTab({ icon, title, content, empty }: { icon: string; title: string; content?: string; empty: string }) {
@@ -260,7 +302,7 @@ function HomeLanding({
   const [heroBudget, setHeroBudget] = useState("Any budget");
   const upcomingCount = festivals.filter((event) => ["upcoming", "ongoing"].includes(eventStatus(event))).length;
   const provinceCount = new Set(festivals.map((event) => event.provinsi).filter(Boolean)).size;
-  const popular = [...festivals].sort((a, b) => Number(b.top_10_ken === "Ya") - Number(a.top_10_ken === "Ya")).slice(0, 4);
+  const popular = [...festivals].sort((a, b) => (a.tanggal_mulai || "9999-12-31").localeCompare(b.tanggal_mulai || "9999-12-31") || a.nama_event.localeCompare(b.nama_event, "en")).slice(0, 4);
   const destinationsStrip = destinations.slice(0, 3);
   return (
     <main>
@@ -282,7 +324,7 @@ function HomeLanding({
         <div className="hero-vertical-note">THE ARCHIPELAGO, ONE STORY AT A TIME</div>
         <div className="hero-caption"><span /> A journey into local culture</div>
       </section>
-      <section className="stats-bar"><div className="stat-cell"><span className="stat-icon stat-green">✺</span><div><strong>{festivals.length}</strong><small>Festival listings</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-orange">◷</span><div><strong>{upcomingCount}</strong><small>Upcoming or ongoing*</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-blue">⌖</span><div><strong>{provinceCount}</strong><small>Provinces represented</small></div></div><p className="stats-note">*Calculated from dates in the<br />working dataset. Includes {demoFestivalCount} fictional demo listings for prototype testing.</p></section>
+      <section className="stats-bar"><div className="stat-cell"><span className="stat-icon stat-green">✺</span><div><strong>{festivals.length}</strong><small>Festival listings</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-orange">◷</span><div><strong>{upcomingCount}</strong><small>Upcoming or ongoing*</small></div></div><span className="stat-separator" /><div className="stat-cell"><span className="stat-icon stat-blue">⌖</span><div><strong>{provinceCount}</strong><small>Provinces represented</small></div></div><p className="stats-note">*Calculated from the current active event dataset. Confirm event details with official sources.</p></section>
       <section className="home-feature-row page-width"><button className="home-feature" onClick={() => onNavigate("explore")}><span className="feature-icon icon-orange">▣</span><strong>Festivals & events</strong><small>Discover cultural celebrations across Indonesia.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("destinations")}><span className="feature-icon icon-blue">⌖</span><strong>Cultural destinations</strong><small>Explore regions known for living traditions.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onNavigate("planner")}><span className="feature-icon icon-purple">✧</span><strong>Trip planner</strong><small>Plan a cultural trip around your dates and interests.</small><span className="feature-arrow">↗</span></button><button className="home-feature" onClick={() => onComingSoon("Complete 3A destination guides")}><span className="feature-icon icon-green">▤</span><strong>3A information</strong><small>Attractions, amenities, and accessibility.</small><span className="feature-arrow">↗</span></button></section>
       <section className="home-section page-width">
         <div className="section-head"><div><div className="section-kicker">A GOOD PLACE TO START</div><h2>Popular festivals</h2><p>Browse event references from across the archipelago.</p></div><button className="text-arrow" onClick={() => onNavigate("explore")}>View all events <span>→</span></button></div>
@@ -310,7 +352,6 @@ function ExplorePage({
   const [province, setProvince] = useState("all");
   const [timing, setTiming] = useState<Timing>("all");
   const [category, setCategory] = useState<Category>("All");
-  const [topOnly, setTopOnly] = useState(false);
   const [budget, setBudget] = useState("all");
   const [visible, setVisible] = useState(12);
   const categories: Category[] = ["All", "Festivals", "Performances", "Museums", "Culinary", "Traditions", "Village tourism"];
@@ -321,22 +362,21 @@ function ExplorePage({
     const queryMatch = !query.trim() || haystack.includes(query.trim().toLowerCase());
     const provinceMatch = province === "all" || event.provinsi === province;
     const timeMatch = timing === "all" || status === timing;
-    const topMatch = !topOnly || event.top_10_ken?.toLowerCase() === "ya";
     const budgetMatch = budget === "all" || (budget === "free" ? (min === 0 || /gratis|free/i.test(event.harga_status || "")) : budget === "under500" ? (typeof min === "number" && min > 0 && min < 500000) : budget === "under1m" ? (typeof min === "number" && min <= 1000000) : true);
-    return queryMatch && provinceMatch && timeMatch && topMatch && categoryMatch(event, category) && budgetMatch;
+    return queryMatch && provinceMatch && timeMatch && categoryMatch(event, category) && budgetMatch;
   }).sort((a, b) => {
     const rank = (e: FestivalRecord) => eventStatus(e) === "upcoming" ? 0 : eventStatus(e) === "ongoing" ? 1 : eventStatus(e) === "unknown" ? 2 : 3;
     return rank(a) - rank(b) || a.nama_event.localeCompare(b.nama_event, "en");
-  }), [query, province, timing, topOnly, category, budget]);
-  const clear = () => { setQuery(""); setProvince("all"); setTiming("all"); setTopOnly(false); setCategory("All"); setBudget("all"); setVisible(12); };
+  }), [query, province, timing, category, budget]);
+  const clear = () => { setQuery(""); setProvince("all"); setTiming("all"); setCategory("All"); setBudget("all"); setVisible(12); };
   return <main className="content-page explore-page"><div className="page-intro"><div className="section-kicker">FIND YOUR NEXT CULTURAL EXPERIENCE</div><h1>Explore festivals & culture</h1><p>Discover events across Indonesia, from regional celebrations to living traditions.</p></div>
     <div className="explore-search-row"><span>⌕</span><input value={query} onChange={(e) => { setQuery(e.target.value); setVisible(12); }} placeholder="Search a festival, destination, or city..." aria-label="Search event listings" /><kbd>/</kbd><span className="search-results-total">{results.length} listings</span></div>
     <div className="category-scroll">{categories.map((item) => <button key={item} onClick={() => { setCategory(item); setVisible(12); }} className={`category-chip ${category === item ? "category-active" : ""}`}>{item}</button>)}</div>
-    <div className="explore-layout"><aside className="filters-sidebar"><div className="filters-heading"><strong>Filters</strong><button onClick={clear}>Reset</button></div><label className="filter-group"><span>Location</span><select value={province} onChange={(e) => setProvince(e.target.value)} aria-label="Choose a destination"><option value="all">All provinces</option>{provinces.map((p) => <option key={p} value={p}>{p}</option>)}</select></label><label className="filter-group"><span>When</span><select value={timing} onChange={(e) => setTiming(e.target.value as Timing)}><option value="all">Any time</option><option value="upcoming">Upcoming</option><option value="ongoing">Happening now</option><option value="past">Past events</option></select></label><div className="filter-group"><span>Budget guidance</span><label className="radio-line"><input type="radio" name="budget" checked={budget === "all"} onChange={() => setBudget("all")} /> Any budget</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "free"} onChange={() => setBudget("free")} /> Free entry listed</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under500"} onChange={() => setBudget("under500")} /> Under Rp500,000</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under1m"} onChange={() => setBudget("under1m")} /> Up to Rp1,000,000</label></div><button className={`top-filter-sidebar ${topOnly ? "selected" : ""}`} onClick={() => setTopOnly((v) => !v)}><span>✦</span><span><strong>KEN Top 10</strong><small>Highlight selected KEN listings</small></span><span className="toggle-track"><i /></span></button><div className="filter-help"><span>ⓘ</span><p>The catalogue includes {demoFestivalCount} fictional demo listings for prototype testing. They are labelled “Demo listing” and are not real event announcements.</p></div></aside>
+    <div className="explore-layout"><aside className="filters-sidebar"><div className="filters-heading"><strong>Filters</strong><button onClick={clear}>Reset</button></div><label className="filter-group"><span>Location</span><select value={province} onChange={(e) => setProvince(e.target.value)} aria-label="Choose a destination"><option value="all">All provinces</option>{provinces.map((p) => <option key={p} value={p}>{displayProvinceName(p)}</option>)}</select></label><label className="filter-group"><span>When</span><select value={timing} onChange={(e) => setTiming(e.target.value as Timing)}><option value="all">Any time</option><option value="upcoming">Upcoming</option><option value="ongoing">Happening now</option></select></label><div className="filter-group"><span>Budget guidance</span><label className="radio-line"><input type="radio" name="budget" checked={budget === "all"} onChange={() => setBudget("all")} /> Any budget</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "free"} onChange={() => setBudget("free")} /> Free entry listed</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under500"} onChange={() => setBudget("under500")} /> Under Rp500,000</label><label className="radio-line"><input type="radio" name="budget" checked={budget === "under1m"} onChange={() => setBudget("under1m")} /> Up to Rp1,000,000</label></div><div className="filter-help"><span>ⓘ</span><p>Event dates, ticket details, and visitor information can change. Confirm current details with the organiser or official source before travelling.</p></div></aside>
       <section className="results-main"><div className="results-heading"><div><h2>{category === "All" ? "Cultural events" : category}</h2><p>Showing {Math.min(visible, results.length)} of {results.length} listings</p></div><label className="sort-select">Sort by <select defaultValue="relevant"><option value="relevant">Recommended</option><option value="name">Name A–Z</option></select></label></div>
       {results.length ? <div className="event-grid-explore">{results.slice(0, visible).map((event) => <EventCard key={event.no} event={event} onOpen={onOpenEvent} isFavorite={favorites.has(event.no)} onToggleFavorite={onToggleFavorite} />)}</div> : <div className="empty-results"><span>⌕</span><h3>No matches found</h3><p>Try removing a filter or searching for another location.</p><button className="button button-primary" onClick={clear}>Clear all filters</button></div>}
       {visible < results.length && <button className="button button-secondary show-more" onClick={() => setVisible((v) => v + 12)}>Load more events ↓</button>}
-      <div className="dataset-disclaimer"><span>ⓘ</span><p><strong>A note on event data.</strong> The catalogue combines the 125 KEN 2026 working-dataset records with {demoFestivalCount} fictional demo listings created to test the prototype. Demo listings are not real or announced events. Official records are not live-verified; confirm dates, prices, and visitor details with organisers before travelling.</p></div>
+      <div className="dataset-disclaimer"><span>ⓘ</span><p><strong>A note on event data.</strong> The active catalogue focuses on ongoing and upcoming festival listings. Some dates, ticket prices, venue details, and visitor facilities still require confirmation; check official organiser sources before travelling.</p></div>
       </section></div><Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} />
   </main>;
 }
@@ -412,10 +452,10 @@ function PlannerPage({
           <span className="planner-banner-icon">✦</span>
           <div>
             <strong>Your next story starts here</strong>
-            <p>Choose your preferences to find matching festivals. We also add flexible activity ideas to create a day-by-day outline; demo records are clearly labelled.</p>
+            <p>Choose your preferences to find matching festivals. We also add flexible activity ideas to create a day-by-day outline.</p>
           </div>
         </div>
-        <span className="coming-badge">{demoFestivalCount} FICTIONAL DEMO LISTINGS INCLUDED</span>
+        <span className="coming-badge">CURRENT EVENT DATASET</span>
       </div>
       <div className="planner-layout">
         <form className="planner-settings" onSubmit={handleSubmit} noValidate>
@@ -430,7 +470,7 @@ function PlannerPage({
             <span>Where would you like to go?</span>
             <select value={province} onChange={(e) => setProvince(e.target.value)}>
               <option value="all">Anywhere in Indonesia</option>
-              {provinces.map((p) => <option key={p} value={p}>{p === "DI Yogyakarta" ? "Yogyakarta" : p}</option>)}
+              {provinces.map((p) => <option key={p} value={p}>{displayProvinceName(p)}</option>)}
             </select>
           </label>
           <div className="field-two-col">
@@ -603,7 +643,7 @@ function ItineraryPage({
         <div>
           <div className="section-kicker">{isSample ? "SAMPLE TRIP · ILLUSTRATIVE IDEAS" : "YOUR TRIP PLAN · FESTIVAL MATCHES + FLEXIBLE IDEAS"}</div>
           <h1>Your cultural journey</h1>
-          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and activities are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : eventCount ? `We found ${eventCount} festival ${eventCount === 1 ? "listing" : "listings"} for your destination and dates, then filled the remaining schedule with flexible activity ideas. Activities are shown in suggested order, not fixed appointment times. Confirm all venues and details before travelling.` : "No festival listing matched your destination and dates, so we prepared a flexible day-by-day outline. Add verified places or adjust your trip preferences before travelling."}{!isSample && plan.matches.some((event) => event.data_status === "demo") ? ` ${plan.matches.filter((event) => event.data_status === "demo").length} match(es) are fictional demo records for prototype testing, not real event announcements.` : ""}</p>
+          <p>{isSample ? "A sample 3-day itinerary layout inspired by Yogyakarta. Places and activities are illustrative and must be checked before travel. This sample is separate from recommendations created with Trip Planner." : eventCount ? `We found ${eventCount} festival ${eventCount === 1 ? "listing" : "listings"} for your destination and dates, then filled the remaining schedule with flexible activity ideas. Activities are shown in suggested order, not fixed appointment times. Confirm all venues and details before travelling.` : "No festival listing matched your destination and dates, so we prepared a flexible day-by-day outline. Add verified places or adjust your trip preferences before travelling."}</p>
         </div>
         <div className="itinerary-head-actions">
           {isSample ? (
@@ -631,7 +671,6 @@ function ItineraryPage({
         })}
       </div>
       <div className="itinerary-list">
-        {!isSample && plan.matches.some((event) => event.data_status === "demo") && <div className="demo-data-notice"><strong>Demo data included.</strong> Fictional events may appear in this itinerary to test the planning flow. They are not real announcements and must not be used for travel planning.</div>}
         {isSample ? selectedSampleActivities.map((activity, index) => (
           <article className="itinerary-activity" key={`${safeActiveDay}-${activity.title}`}>
             <div className="activity-line"><i /></div>
@@ -643,7 +682,7 @@ function ItineraryPage({
           const event = activity.eventNo ? eventByNo.get(activity.eventNo) : undefined;
           const photo = event ? getEventPhoto(event, index) : { url: imagePool[(index + safeActiveDay) % imagePool.length], illustrative: true };
           const isFestival = activity.source === "festival" && Boolean(event);
-          const kindLabel = isFestival ? (event?.data_status === "demo" ? "DEMO EVENT · FICTIONAL" : "Festival listing") : activity.source === "custom" ? "Your activity" : "Flexible idea";
+          const kindLabel = isFestival ? "Festival listing" : activity.source === "custom" ? "Your activity" : "Flexible idea";
           return (
             <article className="itinerary-activity itinerary-event-activity" key={activity.id}>
               <div className="activity-line"><i /></div>
@@ -682,7 +721,7 @@ function ItineraryPage({
 }
 
 function DestinationsPage({ onComingSoon }: { onComingSoon: (feature: string) => void }) {
-  return <main className="content-page destinations-page"><div className="page-intro"><div className="section-kicker">EXPLORE THE ARCHIPELAGO</div><h1>Destinations with stories</h1><p>Start with places where traditions, local creativity, and landscapes come together.</p></div><div className="destination-feature"><img src={imagePool[0]} alt="Illustrative Indonesian destination landscape"/><div className="destination-feature-shade"/><div className="destination-feature-copy"><span className="eyebrow">CULTURE IS EVERYWHERE</span><h2>One country.<br/><em>Many worlds.</em></h2><p>Explore Indonesia one region at a time, then discover events that may bring you closer to local life.</p><button className="button button-light" onClick={() => onComingSoon("Destination detail guides")}>Explore destination guide ↗</button></div></div><div className="section-head destination-section-head"><div><div className="section-kicker">YOUR NEXT STOP</div><h2>Explore by destination</h2><p>These are destination previews. Detailed amenities and map information are coming soon.</p></div></div><div className="destination-grid">{destinations.map((d) => <article className="destination-card" key={d.name}><button className="destination-photo" onClick={() => onComingSoon(`${d.name} destination guide`)}><img src={d.image} alt={`Illustrative photo representing ${d.name}`} loading="lazy"/><span>{d.tag}</span></button><div className="destination-card-body"><h3>{d.name}</h3><small>{d.province}</small><p>{d.description}</p><div className="destination-bottom"><span>{festivals.filter((f) => f.provinsi === d.province).length} dataset listings in region</span><button onClick={() => onComingSoon(`${d.name} destination guide`)}>View guide ↗</button></div></div></article>)}</div><div className="dataset-disclaimer"><span>ⓘ</span><p><strong>Destination guide roadmap.</strong> Maps, nearby hotels, restaurants, and visitor facilities are planned for a future version. No live accommodation or opening-hour data is connected yet.</p></div><Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} /></main>;
+  return <main className="content-page destinations-page"><div className="page-intro"><div className="section-kicker">EXPLORE THE ARCHIPELAGO</div><h1>Destinations with stories</h1><p>Start with places where traditions, local creativity, and landscapes come together.</p></div><div className="destination-feature"><img src={imagePool[0]} alt="Illustrative Indonesian destination landscape"/><div className="destination-feature-shade"/><div className="destination-feature-copy"><span className="eyebrow">CULTURE IS EVERYWHERE</span><h2>One country.<br/><em>Many worlds.</em></h2><p>Explore Indonesia one region at a time, then discover events that may bring you closer to local life.</p><button className="button button-light" onClick={() => onComingSoon("Destination detail guides")}>Explore destination guide ↗</button></div></div><div className="section-head destination-section-head"><div><div className="section-kicker">YOUR NEXT STOP</div><h2>Explore by destination</h2><p>These are destination previews. Detailed amenities and map information are coming soon.</p></div></div><div className="destination-grid">{destinations.map((d) => <article className="destination-card" key={d.name}><button className="destination-photo" onClick={() => onComingSoon(`${d.name} destination guide`)}><img src={d.image} alt={`Illustrative photo representing ${d.name}`} loading="lazy"/><span>{d.tag}</span></button><div className="destination-card-body"><h3>{d.name}</h3><small>{displayProvinceName(d.province)}</small><p>{d.description}</p><div className="destination-bottom"><span>{festivals.filter((f) => f.provinsi === d.province).length} dataset listings in region</span><button onClick={() => onComingSoon(`${d.name} destination guide`)}>View guide ↗</button></div></div></article>)}</div><div className="dataset-disclaimer"><span>ⓘ</span><p><strong>Destination guide roadmap.</strong> Maps, nearby hotels, restaurants, and visitor facilities are planned for a future version. No live accommodation or opening-hour data is connected yet.</p></div><Footer onNavigate={(v) => window.dispatchEvent(new CustomEvent("festinesia:navigate", { detail: v }))} /></main>;
 }
 
 function Footer({ onNavigate }: { onNavigate: (view: View) => void }) {

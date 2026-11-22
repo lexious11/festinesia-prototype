@@ -1,15 +1,15 @@
-# FestiNesia — Prototype v3
+# FestiNesia — Current Prototype
 
-An English-language Next.js prototype for discovering Indonesian cultural festivals and destinations. This version follows the shared six-screen reference more closely and keeps the original working KEN 2026 dataset of 125 listings.
+An English-language Next.js prototype for discovering upcoming Indonesian cultural festivals and planning culture-focused trips. The current active catalogue contains 11 festival listings with dates after 26 November 2026. Dates and visitor details are based on the working dataset and are not live confirmations.
 
-## Main screens
+## Main sections
 
-- **Home** — full-width cultural travel hero, search controls, dataset statistics, feature cards, popular events, and destination previews.
-- **Explore** — event search, category chips, province and date-status filters, budget guidance, KEN Top 10 filter, event cards, saved-event hearts.
-- **Event details** — photo gallery preview, overview, 3A (Attraction, Amenities, Accessibility), travel tips/reviews tabs, and source links.
-- **Trip Planner** — destination/date/budget/interests/travellers form and a travel-guide preview.
-- **Sample itinerary** — three-day visual schedule layout, clearly labeled as illustrative rather than a confirmed plan.
-- **Destinations** — destination preview cards and roadmap placeholders for maps and nearby facilities.
+- **Home** — cultural travel introduction, festival search, current catalogue statistics, featured events, and destination previews.
+- **Explore** — search and filter active festival listings by province, date status, category, and ticket-price guidance.
+- **Festival details** — a shared event-detail template with an event overview, Attraction, Amenities, Accessibility, travel tips, review placeholder, source links, and an image-gallery preview. Content changes according to the selected festival record.
+- **Trip Planner** — users select a destination, travel dates (up to 7 days), budget preference, interests, and traveller count. The app matches festival listings by destination and date, then ranks matches using selected interests.
+- **Itinerary** — automatically creates a day-by-day outline. Dataset-backed festivals are placed on matching dates; flexible activity ideas fill open parts of the day. Users can add, remove, and reorder activities, then save the plan in the current browser.
+- **Destinations** — destination preview cards and roadmap placeholders for detailed destination guides, maps, and nearby facilities.
 
 ## Run locally
 
@@ -20,25 +20,45 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000. Stop the development server with `Ctrl + C`.
 
-To stop the local server, use `Ctrl + C` in the terminal.
+To verify a production build:
 
-## Prototype vs. implemented functionality
+```bash
+npm run build
+```
 
-Implemented with local state: app navigation, event search, province/time/category/budget filtering, KEN Top 10 filter, event details, tab selection, saved-event hearts, sample itinerary day tabs, and responsive layouts.
+## Current functionality and limitations
 
-Features not connected yet display a **Coming soon** notice: personalised trip recommendations and itinerary generation, full event galleries, itinerary saving/editing, destination guide details, maps, nearby hotel/restaurant data, traveller profile, and reviews.
+- Event search, category filters, province filters, upcoming/ongoing status filters, price guidance, event-detail tabs, and saved-event hearts are implemented with local data/state.
+- Event detail pages use the same layout, but the Overview and 3A content is read from each event's own dataset fields. Unknown or unverified details are described as such rather than filled with assumptions.
+- The Trip Planner matches festival records by destination and date, then ranks results by selected interests. The budget is currently stored as a planning preference; it does not calculate total transport, accommodation, or meal costs.
+- The itinerary generator places matching festival listings on dates that overlap the trip. It adds clearly labelled flexible ideas for open parts of each day; these are not confirmed venues, reservations, or route recommendations. No unsupported venue name or visit time is invented.
+- Itinerary editing and saving are browser-local. Saved plans are available in the same browser on the same device; there is no user account or cloud sync.
+- No AI chatbot, online booking, map routing, live opening-hour feed, or organiser portal is connected.
 
-## Dataset & content notes
+## Dataset and content
 
-- `data/festivals.json` feeds the UI and includes 125 entries from the user's prepared KEN 2026 dataset.
-- `data/FestiNesia_KEN_2026_dataset_diperbarui.csv` is included for reference/editing.
-- Date statuses are derived from the dataset; they are not live confirmations.
-- Attraction and amenities fields are empty where they have not been verified. The UI displays that limitation instead of inventing facts.
-- Photos on cards and detail galleries are **illustrative stock imagery** hosted remotely (mainly Unsplash). They are not presented as official photos of each named event. Event-specific images can be added to the `foto_url` field after confirming source, accuracy, and usage rights.
-- Remote images and Google Fonts need an internet connection. If an image provider changes a URL, replace the affected URL in `lib/event-images.ts` or the `imagePool` in `app/page.tsx`.
+- `data/festivals.json` is the active dataset consumed by the website.
+- `data/festivals.csv` is the editable tabular copy of the same active records. Keep it in sync with `festivals.json` when updating event data.
+- The active catalogue contains 11 listings whose start dates are after 26 November 2026. Past records are not included in the active catalogue. `data/demo-festivals.json` and `data/demo-festivals.csv` are empty; fictional demo events are not shown as real festival listings.
+- `data/FestiNesia_KEN_2026_dataset_diperbarui.csv` is retained as a historical/reference source file and is not the active catalogue used by the UI.
+- Event names and local cultural terms remain in their original form. User-facing descriptions, Attraction, Amenities, Accessibility, ticket labels, and date labels are presented in English. Province and administrative-area labels are translated in the UI while canonical dataset values remain unchanged for filtering.
+- Some event dates, venue details, prices, amenities, and transport notes still need confirmation. Check the event's official source or organiser before travelling.
+- Event-specific official photos were not supplied for all listings. The UI may use clearly labelled illustrative imagery until an accurate image with permission is available.
+
+## Project structure
+
+```text
+app/                 Next.js pages, layout, and styles
+data/festivals.json  Active event data consumed by the UI
+data/festivals.csv   Editable copy of active event data
+lib/festivals.ts     Festival types, status, date, and price helpers
+lib/trip-planner.ts  Matching and itinerary-generation logic
+lib/event-images.ts  Event image selection and fallbacks
+public/images/      FestiNesia logo and favicon assets
+```
 
 ## Deploy
 
-Push the project to a Git provider such as GitHub and import it into Vercel. Vercel should detect Next.js automatically. Before publishing, verify event dates, source links, image usage rights, and any destination facts that could affect a traveller's plans.
+Push the project to the connected Git repository. Vercel detects Next.js and deploys new commits from the configured production branch. Before publishing dataset changes, run `npm run build` and review dates, source links, photo permissions, and any visitor details that could affect travel decisions.
