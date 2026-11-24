@@ -1,9 +1,15 @@
 import type { FestivalRecord } from "@/lib/festivals";
 
-export type EventImage = { url: string; illustrative: boolean };
+export type EventImage = {
+  url: string;
+  illustrative: boolean;
+  label: string;
+  caption?: string | null;
+  sourceText?: string | null;
+  sourceUrl?: string | null;
+};
 
-// Stock images are used as illustrative placeholders until an event-specific
-// image is supplied in foto_url and its accuracy/usage permission is checked.
+// These stock images remain fallbacks for listings without a usable supplied photo.
 const imagePool = [
   "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1100&q=82",
   "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1100&q=82",
@@ -23,8 +29,17 @@ const naturePattern = /lake|danau|mountain|gunung|flower|bunga|fruit|buah|nature
 
 export function getEventImage(event: FestivalRecord): EventImage {
   const specific = event.foto_url?.trim();
-  if (specific && /^https?:\/\//i.test(specific)) {
-    return { url: specific, illustrative: false };
+  if (specific && (/^https?:\/\//i.test(specific) || (specific.startsWith("/") && !specific.startsWith("//")))) {
+    const type = event.photo_type;
+    const label = type === "festival" ? "Festival photo" : type === "related" ? "Related photo" : "Event photo";
+    return {
+      url: specific,
+      illustrative: false,
+      label,
+      caption: event.photo_caption,
+      sourceText: event.photo_source,
+      sourceUrl: event.photo_source_url,
+    };
   }
 
   const title = event.nama_event || "";
@@ -36,5 +51,5 @@ export function getEventImage(event: FestivalRecord): EventImage {
   else if (ritualPattern.test(title)) poolIndex = index % 2 === 0 ? 1 : 5;
   else if (naturePattern.test(title)) poolIndex = index % 2 === 0 ? 3 : 4;
 
-  return { url: imagePool[poolIndex], illustrative: true };
+  return { url: imagePool[poolIndex], illustrative: true, label: "Illustrative photo" };
 }

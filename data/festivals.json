@@ -13,9 +13,9 @@
     "amenitas": "Accommodation in Pemuteran Village: Bagus Homestay and Arjuna Homestay (listed on Frommer's); Kubu Sari Guest House and Amertha Bali Villas (listed on booking sites). Toilets, parking and food at the venue: not verified",
     "aksesibilitas_festinesia": "I Gusti Ngurah Rai International Airport (DPS) (KEN 2026 catalog); travel time and public transport not verified",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "/images/festivals/pemuteran-bay-festival/pemuteran-bay-festival-01.webp",
     "url_sumber": "https://www.indonesia.travel/id-en/events/event-detail/pemuteran-bay-festival-2026",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.indonesia.travel/id-en/events/event-detail/pemuteran-bay-festival-2026; amenity data last checked 2026-11-17.",
     "last_verified_event_info": "2026-11-17",
@@ -34,9 +34,15 @@
     "catatan_sumber_lain": "The 27-29 Nov 2026 dates follow the organizer's Instagram (provided by the user) and the indonesia.travel page. Other sources differ: KEN catalog and Viva list 26-28 Nov; Bali Tourism Office lists 6-8 Nov. Amenities are from hotel directories, not from the organizer. Free admission. 3A quality: Attraction: verified; Amenities: partial; Accessibility: partial.",
     "category": "Cultural & Eco-tourism Festival",
     "venue": "Pemuteran Village, Gerokgak District (specific venue not yet published)",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Date conflict across sources; Attraction verified; Amenities and Accessibility partial"
+    "galeri_foto": [
+      "/images/festivals/pemuteran-bay-festival/pemuteran-bay-festival-02.webp",
+      "/images/festivals/pemuteran-bay-festival/pemuteran-bay-festival-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Attraction: verified; Amenities: partial; Accessibility: partial",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 100,
@@ -52,9 +58,9 @@
     "amenitas": "City level (Banggai), 2018 data: Penginapan Batara (about Rp300,000 per night, breakfast included); few large hotel chains; residents' homestays on Mbuang Mbuang Island; coffee shops. Toilets and parking at the venue: not verified",
     "aksesibilitas_festinesia": "Syukuran Aminuddin Amir Airport (LUW) in Luwuk, then to Banggai Laut Port: ferry about 9 hours (Rp100,000 per person) or fast boat about 3 hours, running only until the afternoon; from the port take a bentor (motorized pedicab) for about Rp10,000 (2018 data)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "/images/festivals/festival-tumbe/festival-tumbe-01.webp",
     "url_sumber": "https://www.indonesia.travel/id-en/events/event-detail/festival-tumbe-2026",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.indonesia.travel/id-en/events/event-detail/festival-tumbe-2026; amenity data last checked 2026-11-17.",
     "last_verified_event_info": "2026-11-17",
@@ -73,9 +79,15 @@
     "catatan_sumber_lain": "Venue from the Central Sulawesi Province Event Data 2026 (PPID): https://ppid.sultengprov.go.id/wp-content/uploads/2026/08/Data-Event-Provinsi-Sulawesi-Tengah-2026-1.pdf. Free admission. | Amenities and access from CNN Indonesia, 21 Jan 2018 (https://www.cnnindonesia.com/gaya-hidup/20180120185537-269-270412/olesio-banggai-laut/); old data, prices and schedules may have changed. 3A quality: Attraction: verified; Amenities: partial (2018 data); Accessibility: partial (2018 data).",
     "category": "Traditional Ritual Festival",
     "venue": "Banggai Palace (Karaton Banggai) and Banggai Laut City Park",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: verified; Amenities: partial (2018 data); Accessibility: partial (2018 data)"
+    "galeri_foto": [
+      "/images/festivals/festival-tumbe/festival-tumbe-02.webp",
+      "/images/festivals/festival-tumbe/festival-tumbe-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Attraction: verified; Amenities: partial (2018 data); Accessibility: partial (2018 data)",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 82,
@@ -91,9 +103,9 @@
     "amenitas": "BSCC Dome (capacity 2,500 people, South Balikpapan); RedDoorz Syariah near BSCC Dome (listed on Expedia/Hotels.com). Toilets, parking and food at the venue: not verified",
     "aksesibilitas_festinesia": "Sultan Aji Muhammad Sulaiman Sepinggan International Airport (BPN) (KEN 2026 catalog); distance and transport to BSCC Dome not verified",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Balikpapan_Sport_and_Convention_Center_(BSCC)_atau_Dome_Balikpapan.jpg?width=1280",
     "url_sumber": "https://www.indonesia.travel/id-en/events/event-detail/balikpapan-fest-2026",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.indonesia.travel/id-en/events/event-detail/balikpapan-fest-2026; amenity data last checked 2026-11-17.",
     "last_verified_event_info": "2026-11-17",
@@ -113,8 +125,11 @@
     "category": "Cultural Festival",
     "venue": "BSCC Dome Balikpapan",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: verified; Amenities: partial; Accessibility: partial; date requires confirmation"
+    "photo_source": "Related photo, not from this festival: BSCC Dome Balikpapan (venue). Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Balikpapan_Sport_and_Convention_Center_(BSCC)_atau_Dome_Balikpapan.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: verified; Amenities: partial; Accessibility: partial",
+    "photo_type": "related",
+    "photo_caption": "BSCC Dome Balikpapan (venue)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Balikpapan_Sport_and_Convention_Center_(BSCC)_atau_Dome_Balikpapan.jpg"
   },
   {
     "no": 132,
@@ -132,7 +147,7 @@
     "harga_status": "Not announced",
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/pandawa-beach-festival/pandawa-beach-festival-01.webp",
     "url_sumber": "https://sita.badungkab.go.id/en/destinations/pandawa-beach-a-secret-beach-with-an-iconic-street",
     "sumber": "Badung SITA destination page; 2026 date from the Bali 2026 event calendar cited in the submitted verification note.",
     "last_verified_event_info": "2026-11-17",
@@ -151,9 +166,14 @@
     "catatan_sumber_lain": "Event calendar: https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026 ; 2025 programme: https://sita.badungkab.go.id/en/events/pandawa-festival-xiv-2025-chase-the-dream-in-kutuh-bali",
     "category": "Cultural and beach festival",
     "venue": "Pandawa Beach, Kutuh Village, South Kuta",
-    "galeri_foto": [],
-    "photo_source": "No official photo supplied; obtain an official image and permission from the organiser.",
-    "data_quality_status": "Needs review"
+    "galeri_foto": [
+      "/images/festivals/pandawa-beach-festival/pandawa-beach-festival-02.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Needs review",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 133,
@@ -171,7 +191,7 @@
     "harga_status": "Not announced",
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/denpasar-festival/denpasar-festival-01.webp",
     "url_sumber": "https://www.balipost.com/news/2026/11/12/596417/Pendaftaran-Tenant-Denfest-2026-Dibuka...html",
     "sumber": "Bali Post (12 Nov 2026); Bali Tourism Office event listing; visitor-facility details from 2024–2025 coverage.",
     "last_verified_event_info": "2026-11-17",
@@ -190,9 +210,15 @@
     "catatan_sumber_lain": "Bali Tourism Office: https://disparda.baliprov.go.id/event/denpasar-festival ; ANTARA 2024: https://bali.antaranews.com/berita/365414/dispar-atur-arena-denfes-dari-kuliner-hingga-pertunjukan-musik ; Detik 2025: https://www.detik.com/bali/berita/d-8269802/gebrakan-baru-denfest-2025-hadirkan-mesin-pengolahan-sampah-selama-acara",
     "category": "Cultural and city festival",
     "venue": "Catur Muka area, Denpasar; exact 2026 event footprint to confirm",
-    "galeri_foto": [],
-    "photo_source": "No official photo supplied; obtain an official image and permission from the organiser.",
-    "data_quality_status": "Needs review"
+    "galeri_foto": [
+      "/images/festivals/denpasar-festival/denpasar-festival-02.webp",
+      "/images/festivals/denpasar-festival/denpasar-festival-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Needs review",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 131,
@@ -208,9 +234,9 @@
     "amenitas": "Hotels in Singkawang fill up very quickly; booking 3-6 months ahead is recommended (GNFI, 2026 edition); halal and non-halal food options. Toilets and parking: not verified",
     "aksesibilitas_festinesia": "Fly to Supadio Airport (Pontianak), then 3-4 hours by road; Singkawang Airport is said to be faster once fully operational (GNFI, 24 Feb 2026); the parade route may be adjusted around prayer times",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "/images/festivals/cap-go-meh-singkawang/cap-go-meh-singkawang-01.webp",
     "url_sumber": "https://www.indonesia.travel/au-en/events/event-detail/cap-go-meh-singkawang",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.indonesia.travel/au-en/events/event-detail/cap-go-meh-singkawang; amenity data last checked 2026-11-17.",
     "last_verified_event_info": "2026-11-17",
@@ -229,9 +255,15 @@
     "catatan_sumber_lain": "NEEDS VERIFICATION: 20 Feb 2027 is the Cap Go Meh date per the lunar calendar (https://kalendertionghoa.com/blog-cap-go-meh-2027.html); the 2027 event schedule has not been officially announced. The indonesia.travel page shows 2025 edition dates and free admission. Amenities and access from GNFI (https://www.goodnewsfromindonesia.id/indonesiana/sosial-budaya/panduan-lengkap-perayaan-cap-go-meh-singkawang-2026-harmoni-di-kota-seribu-kelenteng). End date is not announced; no duration is assumed. 3A quality: Attraction: verified; Amenities: partial (2026 edition); Accessibility: partial (2026 edition).",
     "category": "Cultural Festival",
     "venue": "Singkawang City (parade route and venues not yet announced)",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: verified; Amenities: partial (2026 edition); Accessibility: partial (2026 edition); date requires confirmation"
+    "galeri_foto": [
+      "/images/festivals/cap-go-meh-singkawang/cap-go-meh-singkawang-02.webp",
+      "/images/festivals/cap-go-meh-singkawang/cap-go-meh-singkawang-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Attraction: verified; Amenities: partial (2026 edition); Accessibility: partial (2026 edition)",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 142,
@@ -249,7 +281,7 @@
     "harga_status": "Not announced",
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/semana-santa-larantuka/semana-santa-larantuka-01.webp",
     "url_sumber": "https://www.indonesia.travel/in/en/events/event-detail/festival-bale-nagi",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.indonesia.travel/in/en/events/event-detail/festival-bale-nagi; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -268,9 +300,15 @@
     "catatan_sumber_lain": "ESTIMATED from the liturgical calendar: Holy Week 2027 falls on 21-28 March (Easter 28 March 2027). Not a festival with an organizer schedule; it is a religious rite and visitors must respect local rules. | AMENITIES (2026-11-22, area level): indonesia.travel; The Jakarta Post https://www.thejakartapost.com/news/2013/03/28/ntt-gearing-semana-santa; tirto.id/Antara https://tirto.id/larantuka-sambut-ratusan-peziarah-jumat-agung-rLg; travel2flores https://travel2flores.info/flores-east-to-west/east-flores/flores-timur; ACCESSIBILITY: travel2flores; Wikipedia; UCA News https://www.ucanews.com/news/indonesian-catholics-prepare-for-centuries-old-festival/78925 3A quality: Attraction: verified; Amenities: partial (area level); Accessibility: partial.",
     "category": "Religious & Cultural Festival",
     "venue": "Larantuka town",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: verified; Amenities: partial (area level); Accessibility: partial; date requires confirmation"
+    "galeri_foto": [
+      "/images/festivals/semana-santa-larantuka/semana-santa-larantuka-02.webp",
+      "/images/festivals/semana-santa-larantuka/semana-santa-larantuka-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Attraction: verified; Amenities: partial (area level); Accessibility: partial",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 134,
@@ -288,7 +326,7 @@
     "harga_status": "Not announced",
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/festival-rimpu-mantika/festival-rimpu-mantika-01.webp",
     "url_sumber": "https://www.jurnalntb.id/2026/11/lolos-seleksi-administrasi-ken-rimpu.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.jurnalntb.id/2026/11/lolos-seleksi-administrasi-ken-rimpu.html; amenity data last checked 2026-11-17.",
     "last_verified_event_info": "2026-11-17",
@@ -307,9 +345,15 @@
     "catatan_sumber_lain": "NEEDS VERIFICATION: planned dates from Jurnal NTB (Nov 2026); not yet in KEN 2027 (curation to be announced Jan 2027). The indonesia.travel page (https://www.indonesia.travel/gb/en/events/event-detail/rimpu-mantika-festival) lists free admission for previous editions. The 2026 edition is in the KEN 2026 dataset (row 91). 3A quality: Attraction: partial (previous edition); Amenities: partial (city level); Accessibility: partial.",
     "category": "Cultural Festival",
     "venue": "Not yet announced",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition); Amenities: partial (city level); Accessibility: partial; date requires confirmation"
+    "galeri_foto": [
+      "/images/festivals/festival-rimpu-mantika/festival-rimpu-mantika-02.webp",
+      "/images/festivals/festival-rimpu-mantika/festival-rimpu-mantika-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Attraction: partial (previous edition); Amenities: partial (city level); Accessibility: partial",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 129,
@@ -327,7 +371,7 @@
     "harga_status": null,
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/jember-fashion-carnaval/jember-fashion-carnaval-01.webp",
     "url_sumber": "https://www.jemberfashioncarnaval.com",
     "sumber": "Jember Fashion Carnaval official website; 2027 dates taken from Event_festinesia.xlsx.",
     "last_verified_event_info": "2026-11-21",
@@ -346,13 +390,19 @@
     "catatan_sumber_lain": "The workbook's gallery field says 'Snapshots | Jember Fashion Carnaval' but does not provide a direct photo URL.",
     "category": "Fashion and cultural festival",
     "venue": "Jember; parade route and exact venue to confirm",
-    "galeri_foto": [],
-    "photo_source": "No direct event photo supplied; obtain official photo and permission.",
-    "data_quality_status": "Needs review"
+    "galeri_foto": [
+      "/images/festivals/jember-fashion-carnaval/jember-fashion-carnaval-02.webp",
+      "/images/festivals/jember-fashion-carnaval/jember-fashion-carnaval-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Needs review",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 128,
-    "nama_event": "Festival Lembah Baliem 2027",
+    "nama_event": "Festival Budaya Lembah Baliem 2027",
     "top_10_ken": "No",
     "provinsi": "Papua Pegunungan",
     "kabupaten_kota": "Kabupaten Jayawijaya",
@@ -364,9 +414,9 @@
     "amenitas": "Wamena has basic facilities; prices are higher than in Jayapura because goods arrive by air. Hotels: Baliem Pilamo (Jl. Trikora, free parking, restaurant/bar, ±3.2 km from the airport), Hotel Baliem Valley Resort (3-star, Sekan Village, Wawelagama), Pintu Biru Hostel.",
     "aksesibilitas_festinesia": "Sentani International Airport (DJJ); Wamena Airport (WMX) (KEN 2026 catalog); no road between Jayapura and Wamena; flight about 40 minutes from Jayapura",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "/images/festivals/festival-budaya-lembah-baliem/festival-budaya-lembah-baliem-01.webp",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -385,9 +435,16 @@
     "catatan_sumber_lain": "ESTIMATED: follows the month of the 2026 edition. 2026 edition: 2026-08-07 to 2026-08-08 (KEN 2026 catalog). Ticket prices follow the 2026 edition; recheck once the 2027 schedule is announced. | AMENITIES (2026-11-22, area level): Sygic https://guides.travel.sygic.com/production/en/Baliem_Valley; Expedia https://www.expedia.ca/Wamena.dx3809; trip.com https://id.trip.com/hotels/wamena-kota-hotel-detail-22993577/hotel-baliem-valley-resort; Tripadvisor; ACCESSIBILITY: Sygic Month-level estimate only; listed in Explore but not matched into Trip Planner until an exact start date is supplied. 3A quality: Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station).",
     "category": "Traditional Ritual Festival",
     "venue": "Baliem Valley, Jayawijaya Regency",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "galeri_foto": [
+      "/images/festivals/festival-budaya-lembah-baliem/festival-budaya-lembah-baliem-02.webp",
+      "/images/festivals/festival-budaya-lembah-baliem/festival-budaya-lembah-baliem-03.webp",
+      "/images/festivals/festival-budaya-lembah-baliem/festival-budaya-lembah-baliem-04.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 127,
@@ -405,7 +462,7 @@
     "harga_status": null,
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/dieng-culture-festival/dieng-culture-festival-01.webp",
     "url_sumber": null,
     "sumber": "Event_festinesia.xlsx; the source field contains 'Festival Dieng' rather than a direct URL.",
     "last_verified_event_info": "2026-11-21",
@@ -424,9 +481,15 @@
     "catatan_sumber_lain": null,
     "category": "Cultural festival",
     "venue": "Dieng Plateau; exact programme locations to confirm",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain official photo and permission.",
-    "data_quality_status": "Needs review"
+    "galeri_foto": [
+      "/images/festivals/dieng-culture-festival/dieng-culture-festival-02.webp",
+      "/images/festivals/dieng-culture-festival/dieng-culture-festival-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Needs review",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 130,
@@ -444,7 +507,7 @@
     "harga_status": null,
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "/images/festivals/festival-pacu-jalur/festival-pacu-jalur-01.webp",
     "url_sumber": "https://www.indonesia.travel/id/id/events/event-detail/traditional-pacu-jalur-festival",
     "sumber": "Indonesia.travel Pacu Jalur event page; 2027 dates taken from Event_festinesia.xlsx.",
     "last_verified_event_info": "2026-11-21",
@@ -463,9 +526,15 @@
     "catatan_sumber_lain": null,
     "category": "Traditional sports and cultural festival",
     "venue": "Tepian Narosa, Teluk Kuantan (location mentioned in workbook access notes; confirm venue for 2027)",
-    "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain official photo and permission.",
-    "data_quality_status": "Needs review"
+    "galeri_foto": [
+      "/images/festivals/festival-pacu-jalur/festival-pacu-jalur-02.webp",
+      "/images/festivals/festival-pacu-jalur/festival-pacu-jalur-03.webp"
+    ],
+    "photo_source": "User-supplied project photo archive; original photographer/source and usage licence were not included.",
+    "data_quality_status": "Needs review",
+    "photo_type": "festival",
+    "photo_caption": null,
+    "photo_source_url": null
   },
   {
     "no": 147,
@@ -481,9 +550,9 @@
     "amenitas": "Merauke city (Yonggo Village, Semangga District is outside the city centre; distance not verified): Swiss-Belhotel Merauke (4-star, 103 rooms, ±10 minutes from Mopah Airport), Hotel Halogen (restaurant, free parking, 24-hour front desk), Megaria Hotel (breakfast, WiFi, free parking), Hotel Panda (airport shuttle).",
     "aksesibilitas_festinesia": "Mopah International Airport (MKQ) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Papua_ceremonial_Dema_drum,_Marind-Anim_people.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -503,8 +572,11 @@
     "category": "Religious & Cultural Festival",
     "venue": "Merauke Regency (2026 edition opened in Yonggo Village, Semangga District)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); date requires confirmation"
+    "photo_source": "Related photo, not from this festival: Kandara ceremonial drum of the Marind-Anim people. Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Papua_ceremonial_Dema_drum,_Marind-Anim_people.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station)",
+    "photo_type": "related",
+    "photo_caption": "Kandara ceremonial drum of the Marind-Anim people",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Papua_ceremonial_Dema_drum,_Marind-Anim_people.jpg"
   },
   {
     "no": 139,
@@ -520,9 +592,9 @@
     "amenitas": "Tourist area managed by the Belitung Tourism Office's recreation park unit (UPTD Taman Hiburan), ±0.5 km from central Tanjung Pandan; has a culinary centre and parking (a regional document describes it as spacious, reviews say it is free but limited when crowded; no lifeguards). Hotels: Grand Hatika (beachfront), Golden Tulip (±10-minute walk), Havana Mutiara (±800 m).",
     "aksesibilitas_festinesia": "H.A.S. Hanandjoeddin International Airport (TJQ) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_Tanjung_Pendam_2.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -542,8 +614,11 @@
     "category": "Traditional Ritual Festival",
     "venue": "Tanjung Pendam, Belitung Regency (2026 edition)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Sunset at Tanjung Pendam Beach (venue). Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Sunset_Tanjung_Pendam_2.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Sunset at Tanjung Pendam Beach (venue)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Sunset_Tanjung_Pendam_2.jpg"
   },
   {
     "no": 140,
@@ -559,9 +634,9 @@
     "amenitas": "Park facilities: prayer room (musala), parking area, toilets, open-air stage, playground, pond, benches, guard post. An ITSB study notes too few public toilets and much roadside parking. During Jakarta's anniversary event here in 2025, the Transport Agency prepared 9 parking pockets (4,214 vehicles) and 6 mobile toilets were provided. Nearest hotel: Hotel Borobudur. Public transport: Juanda Transjakarta stop ±600 m; Juanda, Gambir and Pasar Senen stations.",
     "aksesibilitas_festinesia": "Soekarno-Hatta Airport (CGK); Halim Perdanakusuma Airport (HLP); Gambir / Pasar Senen stations (KEN 2026 catalog for Central Jakarta)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Tari_betawi_festival_lenong_betawi_2018.jpg?width=1280",
     "url_sumber": "https://www.goodnewsfromindonesia.id/indonesiana/sosial-budaya/lebaran-betawi-2026",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.goodnewsfromindonesia.id/indonesiana/sosial-budaya/lebaran-betawi-2026; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -581,8 +656,11 @@
     "category": "Cultural Festival",
     "venue": "Lapangan Banteng, Central Jakarta (2026 edition)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Betawi dance at Festival Lenong Betawi 2018 (different event). Wikimedia Commons, author: Lbbtangsel; https://commons.wikimedia.org/wiki/File:Tari_betawi_festival_lenong_betawi_2018.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Betawi dance at Festival Lenong Betawi 2018 (different event)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Tari_betawi_festival_lenong_betawi_2018.jpg"
   },
   {
     "no": 137,
@@ -598,9 +676,9 @@
     "amenitas": "The Batanghari riverfront (Ancol/Tanggo Rajo) has a playground, seating and a culinary area; tent food stalls in front of the Governor's residence on Jl. Sultan Thaha; pedestrian bridge to Gentala Arasy Tower. Visitor reviews: cleanliness is lacking in some spots.",
     "aksesibilitas_festinesia": "Sultan Thaha Airport (DJB) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Batanghari_River_(199226205).jpeg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -620,8 +698,11 @@
     "category": "River & Maritime Festival",
     "venue": "Batanghari River, Jambi City",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Batanghari River, Jambi (venue). Wikimedia Commons, author: Hafid Wj; https://commons.wikimedia.org/wiki/File:Batanghari_River_(199226205).jpeg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Batanghari River, Jambi (venue)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Batanghari_River_(199226205).jpeg"
   },
   {
     "no": 145,
@@ -637,9 +718,9 @@
     "amenitas": "Previous editions were centred at the Khalkote tourist area, East Sentani; the festival features bazaars and Papuan cuisine as well as local products (coffee, cocoa, Papuan batik, bark crafts). Close to Sentani Airport. Hotel data not yet collected.",
     "aksesibilitas_festinesia": "Sentani International Airport (DJJ) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Menuju_Festival_Danau_Sentani.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -659,8 +740,11 @@
     "category": "Cultural Festival",
     "venue": "Lake Sentani area, Jayapura Regency",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Festival photo: Papuan children heading to perform at Lake Sentani Festival. Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Menuju_Festival_Danau_Sentani.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "festival",
+    "photo_caption": "Papuan children heading to perform at Lake Sentani Festival",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Menuju_Festival_Danau_Sentani.jpg"
   },
   {
     "no": 141,
@@ -678,7 +762,7 @@
     "harga_status": "Not announced",
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Gandrung_banyuwangi.jpg?width=1280",
     "url_sumber": "https://beritajatim.com/?p=533565",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://beritajatim.com/?p=533565; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -698,8 +782,11 @@
     "category": "Cultural Parade",
     "venue": "From the Banyuwangi Regent's Office to Gesibu Taman Blambangan (2018 edition route)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Gandrung dance, Banyuwangi culture. Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Gandrung_banyuwangi.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Gandrung dance, Banyuwangi culture",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Gandrung_banyuwangi.jpg"
   },
   {
     "no": 144,
@@ -717,7 +804,7 @@
     "harga_status": "Not announced",
     "harga_min_rp": null,
     "harga_maks_rp": null,
-    "foto_url": null,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Lumbung_Toraja.jpg?width=1280",
     "url_sumber": "https://www.detik.com/sulsel/berita/d-8274119/pohon-natal-unik-di-toraja-light-festival-tarik-minat-wisatawan",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://www.detik.com/sulsel/berita/d-8274119/pohon-natal-unik-di-toraja-light-festival-tarik-minat-wisatawan; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -737,8 +824,11 @@
     "category": "Cultural & Light Festival",
     "venue": "Tongkonan Sangulele, Rantepao (2025 edition)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Toraja traditional granary (Toraja architecture). Wikimedia Commons, author: Agustinusraharjo; https://commons.wikimedia.org/wiki/File:Lumbung_Toraja.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Toraja traditional granary (Toraja architecture)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Lumbung_Toraja.jpg"
   },
   {
     "no": 135,
@@ -754,9 +844,9 @@
     "amenitas": "About 15 hotels within ±1 mile (±1.6 km) of Baiturrahman Grand Mosque, e.g., Kyriad Muraya and Portola Grand Arabia (free parking); Parkside Alhambra and Hotel Wisata Banda Aceh about 0.4 mile away. The mosque courtyard has 12 electric umbrellas for shade.",
     "aksesibilitas_festinesia": "Sultan Iskandar Muda International Airport (BTJ) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Meuseujid_Raya_Bayturrahman.JPG?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -776,8 +866,11 @@
     "category": "Religious & Cultural Festival",
     "venue": "Baiturrahman Grand Mosque area (Masjid Raya Baiturrahman), Banda Aceh (2026 edition)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Baiturrahman Grand Mosque (venue). Wikimedia Commons, author: Si Gam Acèh; https://commons.wikimedia.org/wiki/File:Meuseujid_Raya_Bayturrahman.JPG. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Baiturrahman Grand Mosque (venue)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Meuseujid_Raya_Bayturrahman.JPG"
   },
   {
     "no": 136,
@@ -793,9 +886,9 @@
     "amenitas": "Small lodgings in Selatpanjang, e.g., New Furama Hotel (1-star) near the market. Hotel options are limited; book early for Chinese New Year (recheck).",
     "aksesibilitas_festinesia": "Sultan Syarif Kasim II International Airport (PKU); Sungai Duku or Buton Port (KEN 2026 catalog); ferries from Pekanbaru (Sungai Duku Port) and Dumai; other nearby airport: Hang Nadim, Batam (±156 km)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Perang_air_di_kepulauan_meranti.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -815,8 +908,11 @@
     "category": "Cultural Festival",
     "venue": "Main streets of Selatpanjang, Meranti Islands Regency",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: verified; Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Festival photo: Water war in Meranti Islands. Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Perang_air_di_kepulauan_meranti.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: verified; Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "festival",
+    "photo_caption": "Water war in Meranti Islands",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Perang_air_di_kepulauan_meranti.jpg"
   },
   {
     "no": 138,
@@ -832,9 +928,9 @@
     "amenitas": "Monpera is at Jl. Merdeka No.1, near the Grand Mosque, Pasar 16 Ilir, Ampera Bridge and Benteng Kuto Besak (BKB). Nearest hotels: Ayola Sentosa ±0.59 km (parking), Ibis Palembang Sanggar ±0.75 km (restaurant), All Nite & Day Veteran ±1.65 km.",
     "aksesibilitas_festinesia": "Sultan Mahmud Badaruddin II International Airport (PLM) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Patung_Burung_Garuda_MONPERA_Palembang.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -854,8 +950,11 @@
     "category": "Heritage Festival",
     "venue": "People's Struggle Monument (Monpera), Palembang (2026 edition)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Garuda statue at Monpera Palembang (venue). Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Patung_Burung_Garuda_MONPERA_Palembang.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Garuda statue at Monpera Palembang (venue)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Patung_Burung_Garuda_MONPERA_Palembang.jpg"
   },
   {
     "no": 143,
@@ -871,9 +970,9 @@
     "amenitas": "Hotels near Bundaran Besar: Hotel Neo Palma ±160 m, Aquarius Boutique Hotel ±400 m, Grand Global Hotel ±533 m. Served by angkot (minibus) routes.",
     "aksesibilitas_festinesia": "Tjilik Riwut Airport (PKY) (KEN 2026 catalog)",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Pasah_Patahu.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -893,8 +992,11 @@
     "category": "Cultural Festival",
     "venue": "Bundaran Besar (Great Roundabout) and several sites in Palangka Raya (2026 edition)",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Festival photo: Pasah Patahu displayed at Isen Mulang Festival 2025. Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Pasah_Patahu.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "festival",
+    "photo_caption": "Pasah Patahu displayed at Isen Mulang Festival 2025",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Pasah_Patahu.jpg"
   },
   {
     "no": 146,
@@ -910,9 +1012,9 @@
     "amenitas": "Mena Village on Roon Island has started building homestays; the 2025 edition was centred in Yende Village. The festival features local MSME food and crafts. Island facilities are limited.",
     "aksesibilitas_festinesia": "Wasior Airport (WSR) (KEN 2026 catalog); speedboat/fast boat from Wasior ±1.5-2 hours; during the festival the local government runs fast boats Manokwari (Anggrem Port)-Yende-Wasior; Susi Air flights Manokwari-Wasior",
     "harga_status": "Free",
-    "harga_min_rp": null,
-    "harga_maks_rp": null,
-    "foto_url": null,
+    "harga_min_rp": 0,
+    "harga_maks_rp": 0,
+    "foto_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Keindahan_Di_Pulau_Roon.jpg?width=1280",
     "url_sumber": "https://heyzine.com/flip-book/84914d5c36.html",
     "sumber": "User-supplied Cultural_Events_Verified_Amenities_EN.csv; event source: https://heyzine.com/flip-book/84914d5c36.html; amenity data last checked 2026-11-22.",
     "last_verified_event_info": "2026-11-22",
@@ -932,7 +1034,10 @@
     "category": "Traditional Ritual Festival",
     "venue": "Roon Island, Teluk Wondama Regency",
     "galeri_foto": [],
-    "photo_source": "No event photo supplied; obtain an official image and usage permission. Use only clearly labelled illustrative imagery until then.",
-    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only"
+    "photo_source": "Related photo, not from this festival: Roon Island scenery (venue). Wikimedia Commons, author: see file page; https://commons.wikimedia.org/wiki/File:Keindahan_Di_Pulau_Roon.jpg. Free license; credit the author and license as shown on the file page.",
+    "data_quality_status": "Attraction: partial (previous edition program); Amenities: partial (area level); Accessibility: partial (nearest airport/station); estimated month only",
+    "photo_type": "related",
+    "photo_caption": "Roon Island scenery (venue)",
+    "photo_source_url": "https://commons.wikimedia.org/wiki/File:Keindahan_Di_Pulau_Roon.jpg"
   }
 ]

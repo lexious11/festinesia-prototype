@@ -124,7 +124,7 @@ function categoryMatch(event: FestivalRecord, category: Category) {
 function getEventPhoto(event: FestivalRecord, offset = 0) {
   const photo = getEventImage(event);
   const backup = imagePool[Math.abs((event.no + offset) % imagePool.length)];
-  return { url: photo.url || backup, illustrative: photo.illustrative ?? true };
+  return { ...photo, url: photo.url || backup };
 }
 
 function Brand({ onClick }: { onClick: () => void }) {
@@ -163,10 +163,10 @@ function EventCard({
     <article className={`event-card ${compact ? "event-card-compact" : ""}`}>
       <div className="event-photo-wrap">
         <button className="event-photo-button" onClick={() => onOpen(event)} aria-label={`View ${event.nama_event}`}>
-          <img className="event-photo" src={photo.url} alt={photo.illustrative ? `Illustrative cultural travel photo for ${event.nama_event}` : event.nama_event} loading="lazy" onError={(e) => { const img = e.currentTarget; if (img.dataset.fallback !== "1") { img.dataset.fallback = "1"; img.src = imagePool[(event.no + 2) % imagePool.length]; } }} />
+          <img className="event-photo" src={photo.url} alt={photo.label === "Festival photo" ? event.nama_event : `${photo.label} for ${event.nama_event}`} loading="lazy" onError={(e) => { const img = e.currentTarget; img.style.display = "none"; const label = img.parentElement?.querySelector(".image-disclaimer"); if (label) label.textContent = "Photo unavailable"; }} />
           <span className="photo-shade" />
           <StatusPill event={event} />
-          {photo.illustrative && <span className="image-disclaimer">Illustrative photo</span>}
+          <span className="image-disclaimer">{photo.label}</span>
         </button>
         <button className={`favorite-button ${isFavorite ? "is-favorite" : ""}`} onClick={() => onToggleFavorite(event)} aria-label={isFavorite ? "Remove from saved events" : "Save event"} aria-pressed={isFavorite}>{isFavorite ? "♥" : "♡"}</button>
       </div>
@@ -195,15 +195,52 @@ function ComingSoonModal({ feature, onClose }: { feature: string; onClose: () =>
   );
 }
 
-function DetailGallery({ event, onGalleryClick }: { event: FestivalRecord; onGalleryClick: () => void }) {
+function DetailGallery({ event, onGalleryClick }: { event: FestivalRecord; onGalleryClick: (src: string) => void }) {
   const photo = getEventPhoto(event);
-  const galleryImages = [photo.url, imagePool[(event.no + 1) % imagePool.length], imagePool[(event.no + 3) % imagePool.length], imagePool[(event.no + 5) % imagePool.length]];
+  // Only use URLs supplied for this event. Do not add unrelated stock images
+  // to a festival that already has a real or related source image.
+  const galleryImages = Array.from(new Set(
+    [photo.url, ...(event.galeri_foto ?? [])].filter(
+      (src): src is string => typeof src === "string" && (/^https?:\/\//i.test(src) || (src.startsWith("/") && !src.startsWith("//"))),
+    ),
+  ));
+  const extraImages = galleryImages.slice(1, 4);
+  const photoDescription = photo.illustrative
+    ? "No event photo is available yet. This placeholder represents the destination or event theme."
+    : photo.label === "Related photo"
+      ? (photo.caption || "This image is related to the event's location or culture, not a direct photograph of the festival.")
+      : "A photo supplied for this festival listing.";
+
   return (
-    <div className="detail-gallery">
-      <button className="gallery-main" onClick={onGalleryClick} aria-label="Open photo gallery"><img src={galleryImages[0]} alt={`Illustrative photo for ${event.nama_event}`} /><span className="gallery-photo-label">Illustrative imagery</span></button>
+    <div className={`detail-gallery ${extraImages.length ? "has-extra-photos" : "single-event-photo"}`}>
+      <button className="gallery-main" onClick={() => onGalleryClick(galleryImages[0])} aria-label={`View photo for ${event.nama_event}`}>
+        <img
+          src={galleryImages[0]}
+          alt={photo.label === "Festival photo" ? event.nama_event : `${photo.label} for ${event.nama_event}`}
+          onError={(e) => {
+            const img = e.currentTarget;
+            img.style.display = "none";
+            const fallback = img.parentElement?.querySelector(".photo-load-fallback");
+            if (fallback) { fallback.textContent = "Photo could not be loaded"; (fallback as HTMLElement).style.display = "grid"; }
+          }}
+        />
+        <span className="photo-load-fallback" aria-live="polite">Photo could not be loaded</span>
+        <span className="gallery-photo-label">{photo.label}</span>
+        <span className="gallery-zoom-hint">Click to enlarge ↗</span>
+      </button>
       <div className="gallery-side">
-        {galleryImages.slice(1).map((src, i) => <button key={`${src}-${i}`} onClick={onGalleryClick}><img src={src} alt="Cultural travel image" loading="lazy" /></button>)}
-        <button className="gallery-more" onClick={onGalleryClick}><span>▦</span> View gallery preview</button>
+        {extraImages.length ? extraImages.map((src, i) => (
+          <button key={`${src}-${i}`} onClick={() => onGalleryClick(src)} aria-label={`View additional photo ${i + 2}`}>
+            <img src={src} alt={`Additional photo for ${event.nama_event}`} loading="lazy" />
+          </button>
+        )) : (
+          <div className="gallery-photo-info">
+            <span className="section-kicker">PHOTO INFORMATION</span>
+            <strong>{photo.illustrative ? "Illustrative image" : photo.label === "Related photo" ? "Related location or cultural image" : "Festival photo"}</strong>
+            <p>{photoDescription}</p>
+            {photo.sourceUrl && <a href={photo.sourceUrl} target="_blank" rel="noreferrer">View photo source ↗</a>}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -223,7 +260,17 @@ function DetailPage({
   onFavorite: () => void;
 }) {
   const [tab, setTab] = useState<DetailTab>("Overview");
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const photo = getEventPhoto(event);
+
+  useEffect(() => {
+    if (!lightboxUrl) return;
+    const handleEscape = (keyboardEvent: KeyboardEvent) => {
+      if (keyboardEvent.key === "Escape") setLightboxUrl(null);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [lightboxUrl]);
   const access = event.aksesibilitas_festinesia?.trim() || event.akses_transportasi?.trim();
   const tabs: DetailTab[] = ["Overview", "Attraction", "Amenities", "Accessibility", "Travel tips", "Reviews"];
   return (
@@ -233,8 +280,24 @@ function DetailPage({
         <div className="detail-title-copy"><div className="eyebrow">CULTURAL EVENT GUIDE</div><h1>{event.nama_event}</h1><div className="detail-location"><span>⌖</span> {locationLabel(event)}</div><div className="detail-title-meta"><span>▦ {formatDateRange(event)}</span><span className="meta-dot">•</span><StatusPill event={event} /></div></div>
         <div className="detail-actions"><button className={`button button-secondary save-detail ${favorite ? "is-favorite" : ""}`} onClick={onFavorite}>{favorite ? "♥ Saved" : "♡ Save event"}</button><button className="button button-primary" onClick={() => onComingSoon("Personalised trip planning for this event")}>Plan a trip <span>↗</span></button></div>
       </div>
-      <DetailGallery event={event} onGalleryClick={() => onComingSoon("Full event photo gallery")} />
-      <div className="illustrative-note">Photos are illustrative and may not depict this specific event. Official event photos will be added as verified sources become available.</div>
+      <DetailGallery event={event} onGalleryClick={setLightboxUrl} />
+      {photo.illustrative ? (
+        <div className="illustrative-note">No festival photo is available yet. The image above is illustrative.</div>
+      ) : photo.label === "Related photo" ? (
+        <div className="illustrative-note">Related image: {photo.caption || "a location or cultural subject"}. It is not a photograph of this specific festival.</div>
+      ) : null}
+      {lightboxUrl && (
+        <div className="photo-lightbox" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setLightboxUrl(null); }}>
+          <section className="photo-lightbox-content" role="dialog" aria-modal="true" aria-label={`Photo for ${event.nama_event}`}>
+            <button className="photo-lightbox-close" onClick={() => setLightboxUrl(null)} aria-label="Close photo">×</button>
+            <img src={lightboxUrl} alt={`Photo for ${event.nama_event}`} />
+            <div className="photo-lightbox-caption">
+              <strong>{event.nama_event}</strong>
+              {event.photo_source && <small>{event.photo_source}</small>}
+            </div>
+          </section>
+        </div>
+      )}
       <div className="detail-tabs" role="tablist" aria-label="Event information">
         {tabs.map((item) => <button key={item} role="tab" aria-selected={tab === item} className={tab === item ? "tab-active" : ""} onClick={() => setTab(item)}>{item}{item === "Reviews" && <span className="soon-mini">SOON</span>}</button>)}
       </div>
@@ -267,11 +330,12 @@ function SourcePanel({ event }: { event: FestivalRecord }) {
     event.url_sumber ? { label: "Open event information", url: event.url_sumber } : null,
     event.harga_sumber ? { label: "Ticket information", url: event.harga_sumber } : null,
     event.instagram ? { label: "Instagram profile", url: `https://www.instagram.com/${event.instagram.replace(/^@/, "")}/` } : null,
+    event.photo_source_url ? { label: "Photo source & licence", url: event.photo_source_url } : null,
   ].filter((item): item is { label: string; url: string } => Boolean(item && /^https?:\/\//.test(item.url)));
   // Some records use the same official page for event and ticket information.
   // Render each URL once to avoid duplicate React keys and duplicate links.
   const links = Array.from(new Map(rawLinks.map((item) => [item.url, item])).values());
-  return <section className="source-panel"><div className="source-symbol">ⓘ</div><div className="source-copy"><strong>Before you go</strong><p>Event dates and details may change. Confirm current information with the organiser or official source before travelling.</p><small>{event.last_verified_event_info ? `Information last checked ${event.last_verified_event_info}.` : "Information verification date not recorded."}</small></div><div className="source-links">{links.length ? links.map((link) => <a key={link.url} href={link.url} target="_blank" rel="noreferrer">{link.label} ↗</a>) : <span>Direct source link unavailable</span>}</div></section>;
+  return <section className="source-panel"><div className="source-symbol">ⓘ</div><div className="source-copy"><strong>Before you go</strong><p>Event dates and details may change. Confirm current information with the organiser or official source before travelling.</p><small>{event.last_verified_event_info ? `Information last checked ${event.last_verified_event_info}.` : "Information verification date not recorded."}</small>{event.photo_source && <small className="photo-attribution">Photo attribution: {event.photo_source}</small>}</div><div className="source-links">{links.length ? links.map((link) => <a key={link.url} href={link.url} target="_blank" rel="noreferrer">{link.label} ↗</a>) : <span>Direct source link unavailable</span>}</div></section>;
 }
 
 function InfoTab({ icon, title, content, empty }: { icon: string; title: string; content?: string; empty: string }) {
@@ -685,13 +749,13 @@ function ItineraryPage({
           </article>
         )) : selectedDayActivities.length ? selectedDayActivities.map((activity, index) => {
           const event = activity.eventNo ? eventByNo.get(activity.eventNo) : undefined;
-          const photo = event ? getEventPhoto(event, index) : { url: imagePool[(index + safeActiveDay) % imagePool.length], illustrative: true };
+          const photo = event ? getEventPhoto(event, index) : { url: imagePool[(index + safeActiveDay) % imagePool.length], illustrative: true, label: "Illustrative photo" };
           const isFestival = activity.source === "festival" && Boolean(event);
           const kindLabel = isFestival ? "Festival listing" : activity.source === "custom" ? "Your activity" : "Flexible idea";
           return (
             <article className="itinerary-activity itinerary-event-activity" key={activity.id}>
               <div className="activity-line"><i /></div>
-              <div className="activity-image"><img src={photo.url} alt={isFestival && event ? (photo.illustrative ? `Illustrative photo for ${event.nama_event}` : event.nama_event) : "Illustrative activity"} loading="lazy" /><span className="itinerary-image-label">{isFestival && !photo.illustrative ? "Event photo" : "Illustrative"}</span></div>
+              <div className="activity-image"><img src={photo.url} alt={isFestival && event ? (photo.label === "Festival photo" ? event.nama_event : `${photo.label} for ${event.nama_event}`) : "Illustrative activity"} loading="lazy" /><span className="itinerary-image-label">{isFestival ? photo.label : "Illustrative"}</span></div>
               <div className="activity-copy">
                 <span className={`activity-kind kind-${index % 3}`}>{kindLabel}</span>
                 <h3>{isFestival && event ? event.nama_event : activity.title}</h3>

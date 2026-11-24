@@ -37,6 +37,9 @@ export type FestivalRecord = {
   venue?: string | null;
   galeri_foto?: string[] | null;
   photo_source?: string | null;
+  photo_type?: "festival" | "related" | null;
+  photo_caption?: string | null;
+  photo_source_url?: string | null;
   data_quality_status?: string | null;
   data_status?: "official" | "demo";
   demo_disclaimer?: string | null;
